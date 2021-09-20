@@ -1,17 +1,20 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
 )
 
 const (
-	PS       = string(os.PathSeparator)
+	PS = string(os.PathSeparator)
 )
 
-func init() {
+var appFlags = new(applicationFlags)
 
+func init() {
+	appFlags.version = flag.NewFlagSet("version", flag.ContinueOnError)
 }
 
 func main() {
@@ -19,9 +22,20 @@ func main() {
 
 	defer func() {
 		if mainErr != nil {
-			fmt.Print("\nfatal error detected: ")
 			log.Fatalln(mainErr)
 		}
 		os.Exit(0)
 	}()
+
+	flag.Parse()
+
+	e := appFlags.parseSubcommands(flag.Args())
+	if e != nil  {
+		mainErr = e
+		return
+	}
+
+	if appFlags.subCmd == "version" {
+		fmt.Println(getVersion())
+	}
 }
