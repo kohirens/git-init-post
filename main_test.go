@@ -16,6 +16,19 @@ const (
 	SubCmdFlags = "SUB_CMD_FLAGS"
 )
 
+func TestMain(m *testing.M) {
+	fmt.Printf("\nrunning test main....\n")
+
+	// delete all tmp files before running all test, but leave them afterward for manual inspection.
+	_ = os.RemoveAll(testTmp)
+	// Set up a temporary dir for generate files
+	_ = os.Mkdir(testTmp, dirMode) // set up a temporary dir for generate files
+	// Run all tests
+	exitCode := m.Run()
+	// Clean up
+	os.Exit(exitCode)
+}
+
 func xTestCallingMain(tester *testing.T) {
 	var tests = []struct {
 		name     string

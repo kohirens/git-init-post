@@ -9,6 +9,7 @@ import (
 
 const (
 	PS = string(os.PathSeparator)
+	dirMode = 0774
 )
 
 var appFlags = new(applicationFlags)

@@ -5,12 +5,14 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os/exec"
 )
 
+// list all versions, sort by semantic version, then give you the one off the top.
 func getVersion() string {
-	nextVersion := "0.1.0"
+	nextVersion := ""
 
 	cmd := exec.Command("git", "tag")
 
@@ -18,11 +20,31 @@ func getVersion() string {
 
 	exitCode := cmd.ProcessState.ExitCode()
 
-	if sce == nil && exitCode == 0 && len(sco) > 2 {
-		fmt.Printf("sco: %q\n", sco)
-		// TODO: Parse the current version
-	} else {
+	if sce == nil && exitCode == 0 {
+		versions := bytes.Trim(sco,"\n")
+		fmt.Printf("versions: %q\n", versions)
+
+		if len(versions) > 0 {
+			_ = bytes.Split(versions, []byte("\n"))
+		}
+
+		// TODO: split output into an array by newline.
+		// TODO: Sort by semantic version.
+		// TODO: Return the latest one.
 	}
 
 	return nextVersion
+}
+
+
+func getCurrentVersion() string {
+	currVer := ""
+
+	return currVer
+}
+
+func getNextVersion() string {
+	nextVer := "0.1.0"
+
+	return nextVer
 }
