@@ -1,0 +1,27 @@
+style: github
+template: CHANGELOG.tpl.md
+info:
+  title: CHANGELOG
+  repository_url: https://github.com/kohirens/git-tool-belt
+options:
+  commits:
+     filters:
+       Type:
+         - add
+         - fix
+         - rmv
+         - chg
+  commit_groups:
+     title_maps:
+       add: Added
+       fix: Fixed
+       chg: Changed
+       rmv: Removed
+  header:
+    pattern: "^(\\w*)\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Subject
+  notes:
+    keywords:
+      - BREAKING CHANGE
