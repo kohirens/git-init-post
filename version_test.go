@@ -48,8 +48,11 @@ func TestVersionSubCmd(tester *testing.T) {
 				t.Errorf("test failed trying to decode %v: %v", bvFile, e.Error())
 			}
 
-			if got != test.wantCode && bv.CurrentVersion != test.version {
-				t.Errorf("got %q, want %q", got, test.wantCode)
+			if got != test.wantCode {
+				t.Errorf("unexpected error on exit. want %q, got %q", test.wantCode, got)
+			}
+			if bv.CurrentVersion != test.version {
+				t.Errorf("unexpected version got %q, want %q", bv.CurrentVersion, test.version)
 			}
 		})
 	}

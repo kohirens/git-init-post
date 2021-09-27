@@ -71,16 +71,12 @@ func getVersion(repoPath string) (latestVersion string) {
 	exitCode := cmd.ProcessState.ExitCode()
 
 	if sce == nil && exitCode == 0 {
-		versions := bytes.Trim(sco, "\n")
-		fmt.Printf("versions: %q\n", versions)
-
-		if len(versions) > 0 {
-			_ = bytes.Split(versions, []byte("\n"))
+		versionsData := bytes.Trim(sco, "\n")
+		if len(versionsData) > 0 {
+			// Split output into an array by newline.
+			versions := bytes.Split(versionsData, []byte("\n"))
+			latestVersion = string(versions[0])
 		}
-
-		// TODO: split output into an array by newline.
-		// TODO: Sort by semantic version.
-		// TODO: Return the latest one.
 	}
 
 	return
