@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"testing"
@@ -12,86 +14,56 @@ func TestVersionSubCmd(tester *testing.T) {
 		name     string
 		wantCode int
 		args     []string
+		version  string
 	}{
-		{"versionSubCmd", 0, []string{"version"}},
+		{"versionSubCmd", 0, []string{"version"}, "1.0.0"},
 	}
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
-			_ = setupARepository("repo-01")
+			tmpRepo := setupARepository("repo-01")
+			test.args = append(test.args, tmpRepo)
 
-			cmd := runMain("TestAppMain", test.args)
+			cmd := getTestBinCmd("TestAppMain", test.args)
 
 			cmdOut, cmdErr := cmd.CombinedOutput()
 
 			got := cmd.ProcessState.ExitCode()
 
-
-			fmt.Printf("exitCode = %v", got)
 			if cmdOut != nil {
-				fmt.Printf("\nBEGIN sub-command stdout:\n%q", string(cmdOut))
+				fmt.Printf("\nBEGIN sub-command stdout:\n%v", string(cmdOut))
 				fmt.Print("END sub-command\n")
 			}
 
 			if cmdErr != nil {
-				fmt.Printf("\nBEGIN sub-command stderr:\n%q", cmdErr.Error())
+				fmt.Printf("\nBEGIN sub-command stderr:\n%v", cmdErr.Error())
 				fmt.Print("END sub-command\n")
 			}
 
-			if got != test.wantCode {
+			var bv buildVersion
+
+			bvFile := tmpRepo + PS + buildVersionFile
+			bvData, _ := os.ReadFile(bvFile)
+			if e := json.Unmarshal(bvData, &bv); e != nil {
+				t.Errorf("test failed trying to decode %v: %v", bvFile, e.Error())
+			}
+
+			if got != test.wantCode && bv.CurrentVersion != test.version {
 				t.Errorf("got %q, want %q", got, test.wantCode)
 			}
 		})
 	}
 }
 
+func setupARepository(repoName string) string {
+	tmpRepoPath := testTmp + PS + repoName
 
-func setupARepository(dirName string) string {
-	tmpRepoPath := testTmp + PS + dirName
-
-	fmt.Printf("tmpRepoPath = %q\n", tmpRepoPath)
-
-	cmd := exec.Command("git", "init", "--initial-branch", "main", tmpRepoPath)
+	srcRepo := "." + PS + fixturesDir + PS + repoName + ".bundle"
+	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, tmpRepoPath)
 	_, _ = cmd.CombinedOutput()
 	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		panic("error initializing a temporary repo for a unit test")
+		log.Panicf("error un-bundling %q to a temporary repo %q for a unit test", srcRepo, tmpRepoPath)
 	}
-
-	dh, err := os.OpenFile(tmpRepoPath + PS + "README.md", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, dirMode)
-	if err != nil {
-		panic("error initializing a file in a temporary repo for a unit test")
-	}
-	dh.Write([]byte("# Testing"))
-	dh.Close()
-
-	wd, _ := os.Getwd()
-	_ = os.Chdir(tmpRepoPath)
-
-	cmd = exec.Command("git", "add", ".")
-	_, _ = cmd.CombinedOutput()
-	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		panic("error adding file to a temporary repo for a unit test")
-	}
-
-	cmd = exec.Command("git", "config", "user.email", "gittoolbelt@example.com")
-	_, _ = cmd.CombinedOutput()
-	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		panic("error initializing an email for a temporary repo for a unit test")
-	}
-
-	cmd = exec.Command("git", "config", "user.name", "Git Toolbelt")
-	_, _ = cmd.CombinedOutput()
-	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		panic("error initializing a name for a temporary repo for a unit test")
-	}
-
-	cmd = exec.Command("git", "commit", "-m", "first commit")
-	_, _ = cmd.CombinedOutput()
-	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		panic("error committing to a temporary repo for a unit test")
-	}
-
-	_ = os.Chdir(wd)
 
 	return tmpRepoPath
 }

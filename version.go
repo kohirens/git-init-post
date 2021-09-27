@@ -6,22 +6,72 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 )
 
-// list all versions, sort by semantic version, then give you the one off the top.
-func getVersion() string {
-	nextVersion := ""
+const buildVersionFile = "build-version.json"
 
-	cmd := exec.Command("git", "tag")
+type buildVersion struct {
+	CommitHash        string `json:"CommitHash"`
+	CurrentVersion    string `json:"currentVersion"`
+	NextVersion       string `json:"nextVersion"`
+	NextVersionReason string `json:"nextVersionReason"`
+}
+
+func versionMain(af *applicationFlags) error {
+	// default to the current working directory, or set it to arg 1 after the version sub command.
+	repoPath, _ := os.Getwd()
+	if len(af.args) > 0 {
+		repoPath = af.args[0]
+	}
+
+	bvInfo := new(buildVersion)
+	bvInfo.CurrentVersion = getVersion(repoPath)
+	bvInfo.NextVersion, bvInfo.NextVersionReason = getNextVersion(repoPath)
+	// TODO: Add commit hash.
+
+
+	bvJson, err1 := json.Marshal(bvInfo)
+	if err1 != nil {
+		return fmt.Errorf("could not JSON encode build version info, reason: %v", err1.Error())
+	}
+
+	// Write the build version info to a json file.
+	bvFile := repoPath + PS + buildVersionFile
+	if e := os.WriteFile(bvFile, bvJson, dirMode); e != nil {
+		return fmt.Errorf("could not build %v, reason: %v", bvFile, e.Error())
+	}
+
+	return nil
+}
+
+// getVersion list all versions, sort by semantic version, then give you the one off the top.
+func getVersion(repoPath string) (latestVersion string) {
+
+	// Remember the current working directory
+	cwd, err1 := os.Getwd()
+	defer os.Chdir(cwd)
+	if err1 != nil {
+		return
+	}
+	// Change into the repository directory.
+	err2 := os.Chdir(repoPath)
+	if err2 != nil {
+		return
+	}
+
+	// Get and sort from the highest to the lowest version.
+	cmd := exec.Command("git", "tag", "--sort=-version:refname")
 
 	sco, sce := cmd.CombinedOutput()
 
 	exitCode := cmd.ProcessState.ExitCode()
 
 	if sce == nil && exitCode == 0 {
-		versions := bytes.Trim(sco,"\n")
+		versions := bytes.Trim(sco, "\n")
 		fmt.Printf("versions: %q\n", versions)
 
 		if len(versions) > 0 {
@@ -33,9 +83,8 @@ func getVersion() string {
 		// TODO: Return the latest one.
 	}
 
-	return nextVersion
+	return
 }
-
 
 func getCurrentVersion() string {
 	currVer := ""
@@ -43,8 +92,13 @@ func getCurrentVersion() string {
 	return currVer
 }
 
-func getNextVersion() string {
-	nextVer := "0.1.0"
+func getNextVersion(repoPath string) (nextVer, nextVerReason string) {
+	nextVer = "0.1.0"
 
-	return nextVer
+	// TODO: Look at all commit logs since the last tag (maybe only annotated):
+	// TODO: Look for "BREAKING CHANGE" to increment major version
+	// TODO: Look for "add:" to increment the minor version
+	// TODO: Otherwise increment the patch version.
+
+	return
 }

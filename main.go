@@ -2,13 +2,12 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 )
 
 const (
-	PS = string(os.PathSeparator)
+	PS      = string(os.PathSeparator)
 	dirMode = 0774
 )
 
@@ -30,13 +29,16 @@ func main() {
 
 	flag.Parse()
 
+	appFlags.parse(flag.Args())
 	e := appFlags.parseSubcommands(flag.Args())
-	if e != nil  {
+	if e != nil {
 		mainErr = e
 		return
 	}
 
 	if appFlags.subCmd == "version" {
-		fmt.Println(getVersion())
+		if e := versionMain(appFlags); e != nil {
+			mainErr = e
+		}
 	}
 }

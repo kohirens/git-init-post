@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -13,16 +15,20 @@ const (
 	fixturesDir = "testdata"
 	testTmp     = "tmp"
 	// SubCmdFlags space separated list of command line flags.
-	SubCmdFlags = "SUB_CMD_FLAGS"
+	SubCmdFlags = "RECURSIVE_TEST_FLAGS"
 )
 
 func TestMain(m *testing.M) {
-	fmt.Printf("\nrunning test main....\n")
+	// ONLY run this code when this test binary has been called directly.
+	if os.Getenv(SubCmdFlags) != "" {
+		runAppMain()
+	}
 
 	// delete all tmp files before running all test, but leave them afterward for manual inspection.
 	_ = os.RemoveAll(testTmp)
 	// Set up a temporary dir for generate files
 	_ = os.Mkdir(testTmp, dirMode) // set up a temporary dir for generate files
+
 	// Run all tests
 	exitCode := m.Run()
 	// Clean up
@@ -41,7 +47,7 @@ func xTestCallingMain(tester *testing.T) {
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
-			cmd := runMain("TestAppMain", test.args)
+			cmd := getTestBinCmd("TestAppMain", test.args)
 
 			out, sce := cmd.CombinedOutput()
 
@@ -61,37 +67,44 @@ func xTestCallingMain(tester *testing.T) {
 	}
 }
 
-// Used for running the main function from other test.
-func TestAppMain(tester *testing.T) {
-	if os.Getenv(SubCmdFlags) != "" {
-		args := strings.Split(os.Getenv(SubCmdFlags), " ")
-		os.Args = append([]string{os.Args[0]}, args...)
+// Used for running the application's main function from other test.
+func runAppMain() {
+	args := strings.Split(os.Getenv(SubCmdFlags), " ")
+	os.Args = append([]string{os.Args[0]}, args...)
 
-		main()
-	}
+	// Debug stmt
+	fmt.Printf("\nos args = %v\n", os.Args)
+
+	main()
 }
 
-func runMain(testFunc string, args []string) *exec.Cmd {
-	// Run the test binary and tell it to run just this test with environment set.
-	cmd := exec.Command(os.Args[0], "-test.run", testFunc)
-
+// getTestBinCmd will run the binary build for these test; if you have a `TestMain`, it will be run automatically.
+func getTestBinCmd(testFunc string, args []string) *exec.Cmd {
+	// call the generated test binary directly
+	// Have it the function runAppMain.
+	cmd := exec.Command(os.Args[0], "-args", strings.Join(args, " "))
+	// Run in the context of the source directory.
+	_, filename, _, _ := runtime.Caller(0)
+	cmd.Dir = path.Dir(filename)
+	// Pass an environment variable for us to know when we have called this test binary directly.
 	subEnvVar := SubCmdFlags + "=" + strings.Join(args, " ")
 	cmd.Env = append(os.Environ(), subEnvVar)
 
 	return cmd
 }
 
+// quiet Prints output to the OS null space.
 func quiet() func() {
 	null, _ := os.Open(os.DevNull)
-	sout := os.Stdout
-	serr := os.Stderr
+	sOut := os.Stdout
+	sErr := os.Stderr
 	os.Stdout = null
 	os.Stderr = null
 	log.SetOutput(null)
 	return func() {
 		defer null.Close()
-		os.Stdout = sout
-		os.Stderr = serr
+		os.Stdout = sOut
+		os.Stderr = sErr
 		log.SetOutput(os.Stderr)
 	}
 }
