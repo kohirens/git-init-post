@@ -29,7 +29,7 @@ func versionMain(af *applicationFlags) error {
 	}
 
 	bvInfo := new(buildVersion)
-	bvInfo.CurrentVersion = getVersion(repoPath)
+	bvInfo.CurrentVersion = getCurrentVersion(repoPath)
 	bvInfo.NextVersion, bvInfo.NextVersionReason = getNextVersion(repoPath)
 	// Add commit hash.
 	hash, err2 := getCommitHash(repoPath, bvInfo.CurrentVersion)
@@ -52,8 +52,8 @@ func versionMain(af *applicationFlags) error {
 	return nil
 }
 
-// getVersion list all versions, sort by semantic version, then give you the one off the top.
-func getVersion(repoPath string) (latestVersion string) {
+// getCurrentVersion list all versions, sort by semantic version, then give you the one off the top.
+func getCurrentVersion(repoPath string) (latestVersion string) {
 	sco, sce, exitCode, err3 := runRepoCmd(repoPath, "tag", "--sort=-version:refname")
 	if err3 != nil {
 		return
@@ -85,12 +85,6 @@ func getCommitHash(repoPath, tag string) (commitHash string, err error) {
 		}
 	}
 	return
-}
-
-func getCurrentVersion() string {
-	currVer := ""
-
-	return currVer
 }
 
 func getNextVersion(repoPath string) (nextVer, nextVerReason string) {
