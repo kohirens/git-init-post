@@ -14,8 +14,9 @@ func TestVersionSubCmd(tester *testing.T) {
 		wantCode int
 		args     []string
 		version  string
+		hash string
 	}{
-		{"versionSubCmd", 0, []string{"version"}, "1.0.0"},
+		{"versionSubCmd", 0, []string{"version"}, "1.0.0", "a7f111c23f68c3b7fb8fefb7b8cd57cd04879f2a"},
 	}
 
 	for _, test := range tests {
@@ -42,6 +43,9 @@ func TestVersionSubCmd(tester *testing.T) {
 			}
 			if bv.CurrentVersion != test.version {
 				t.Errorf("unexpected version got %q, want %q", bv.CurrentVersion, test.version)
+			}
+			if bv.CommitHash != test.hash {
+				t.Errorf("unexpected commit hash got %q, want %q", bv.CommitHash, test.hash)
 			}
 		})
 	}

@@ -29,14 +29,14 @@ func versionMain(af *applicationFlags) error {
 	}
 
 	bvInfo := new(buildVersion)
+	bvInfo.CurrentVersion = getVersion(repoPath)
+	bvInfo.NextVersion, bvInfo.NextVersionReason = getNextVersion(repoPath)
 	// Add commit hash.
-	hash, err2 := getCommitHash(repoPath)
+	hash, err2 := getCommitHash(repoPath, bvInfo.CurrentVersion)
 	if err2 != nil {
 		return err2
 	}
 	bvInfo.CommitHash = hash
-	bvInfo.CurrentVersion = getVersion(repoPath)
-	bvInfo.NextVersion, bvInfo.NextVersionReason = getNextVersion(repoPath)
 
 	bvJson, err1 := json.Marshal(bvInfo)
 	if err1 != nil {
@@ -71,8 +71,19 @@ func getVersion(repoPath string) (latestVersion string) {
 	return
 }
 
-func getCommitHash(repoPath string) (commitHash string, err error) {
+// getCommitHash returns the git commit has for the given tag.
+func getCommitHash(repoPath, tag string) (commitHash string, err error) {
+	sco, sce, exitCode, err1 := runRepoCmd(repoPath, "rev-list", "-n", "1", tag)
+	if err1 != nil {
+		return
+	}
 
+	if sce == nil && exitCode == 0 {
+		commitHashData := bytes.Trim(sco, "\n")
+		if len(commitHashData) > 0 {
+			commitHash = string(commitHashData)
+		}
+	}
 	return
 }
 
