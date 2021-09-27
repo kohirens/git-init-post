@@ -22,24 +22,28 @@ type buildVersion struct {
 }
 
 func versionMain(af *applicationFlags) error {
-	// default to the current working directory, or set it to arg 1 after the version sub command.
+	// Default to the current working directory, or set it to arg 1 after the version sub command.
 	repoPath, _ := os.Getwd()
 	if len(af.args) > 0 {
 		repoPath = af.args[0]
 	}
 
 	bvInfo := new(buildVersion)
+	// Add commit hash.
+	hash, err2 := getCommitHash(repoPath)
+	if err2 != nil {
+		return err2
+	}
+	bvInfo.CommitHash = hash
 	bvInfo.CurrentVersion = getVersion(repoPath)
 	bvInfo.NextVersion, bvInfo.NextVersionReason = getNextVersion(repoPath)
-	// TODO: Add commit hash.
-
 
 	bvJson, err1 := json.Marshal(bvInfo)
 	if err1 != nil {
 		return fmt.Errorf("could not JSON encode build version info, reason: %v", err1.Error())
 	}
 
-	// Write the build version info to a json file.
+	// Write the build version info to a JSON file.
 	bvFile := repoPath + PS + buildVersionFile
 	if e := os.WriteFile(bvFile, bvJson, dirMode); e != nil {
 		return fmt.Errorf("could not build %v, reason: %v", bvFile, e.Error())
@@ -50,25 +54,10 @@ func versionMain(af *applicationFlags) error {
 
 // getVersion list all versions, sort by semantic version, then give you the one off the top.
 func getVersion(repoPath string) (latestVersion string) {
-
-	// Remember the current working directory
-	cwd, err1 := os.Getwd()
-	defer os.Chdir(cwd)
-	if err1 != nil {
+	sco, sce, exitCode, err3 := runRepoCmd(repoPath, "tag", "--sort=-version:refname")
+	if err3 != nil {
 		return
 	}
-	// Change into the repository directory.
-	err2 := os.Chdir(repoPath)
-	if err2 != nil {
-		return
-	}
-
-	// Get and sort from the highest to the lowest version.
-	cmd := exec.Command("git", "tag", "--sort=-version:refname")
-
-	sco, sce := cmd.CombinedOutput()
-
-	exitCode := cmd.ProcessState.ExitCode()
 
 	if sce == nil && exitCode == 0 {
 		versionsData := bytes.Trim(sco, "\n")
@@ -78,6 +67,11 @@ func getVersion(repoPath string) (latestVersion string) {
 			latestVersion = string(versions[0])
 		}
 	}
+
+	return
+}
+
+func getCommitHash(repoPath string) (commitHash string, err error) {
 
 	return
 }
@@ -95,6 +89,29 @@ func getNextVersion(repoPath string) (nextVer, nextVerReason string) {
 	// TODO: Look for "BREAKING CHANGE" to increment major version
 	// TODO: Look for "add:" to increment the minor version
 	// TODO: Otherwise increment the patch version.
+
+	return
+}
+
+func runRepoCmd(repoPath string, args...string) (cmdOut []byte, cmdErr error, exitCode int, err error) {
+	// Remember the current working directory
+	cwd, err1 := os.Getwd()
+	defer os.Chdir(cwd)
+	if err1 != nil {
+		err = err1
+		return
+	}
+	// Change into the repository directory.
+	err2 := os.Chdir(repoPath)
+	if err2 != nil {
+		err = err2
+		fmt.Printf("\nerr2: %v\n", err2.Error())
+		return
+	}
+	// Run an arbitrary the git command.
+	cmd := exec.Command("git", args...)
+	cmdOut, cmdErr = cmd.CombinedOutput()
+	exitCode = cmd.ProcessState.ExitCode()
 
 	return
 }

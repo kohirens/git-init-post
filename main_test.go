@@ -73,7 +73,7 @@ func runAppMain() {
 	os.Args = append([]string{os.Args[0]}, args...)
 
 	// Debug stmt
-	fmt.Printf("\nos args = %v\n", os.Args)
+	//fmt.Printf("\nos args = %v\n", os.Args)
 
 	main()
 }

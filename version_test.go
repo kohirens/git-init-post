@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -26,19 +25,9 @@ func TestVersionSubCmd(tester *testing.T) {
 
 			cmd := getTestBinCmd("TestAppMain", test.args)
 
-			cmdOut, cmdErr := cmd.CombinedOutput()
+			_, _ = cmd.CombinedOutput()
 
 			got := cmd.ProcessState.ExitCode()
-
-			if cmdOut != nil {
-				fmt.Printf("\nBEGIN sub-command stdout:\n%v", string(cmdOut))
-				fmt.Print("END sub-command\n")
-			}
-
-			if cmdErr != nil {
-				fmt.Printf("\nBEGIN sub-command stderr:\n%v", cmdErr.Error())
-				fmt.Print("END sub-command\n")
-			}
 
 			var bv buildVersion
 
