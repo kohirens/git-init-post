@@ -10,25 +10,31 @@ import (
 
 func TestVersionSubCmd(tester *testing.T) {
 	var tests = []struct {
-		name     string
-		wantCode int
-		args     []string
-		version  string
-		hash string
+		name        string
+		wantCode    int
+		args        []string
+		version     string
+		hash        string
+		repo        string
+		nextVersion string
 	}{
-		{"versionSubCmd", 0, []string{"version"}, "1.0.0", "a7f111c23f68c3b7fb8fefb7b8cd57cd04879f2a"},
+		{"withGitTag", 0, []string{"version"}, "1.0.0", "a7f111c23f68c3b7fb8fefb7b8cd57cd04879f2a", "repo-01", "1.0.1"},
+		{"withoutGitTag", 0, []string{"version"}, "HEAD", "bb062f4b4c8df46b08f824c185641747b128ebf8", "repo-02", "0.1.0"},
 	}
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
-			tmpRepo := setupARepository("repo-01")
+			tmpRepo := setupARepository(test.repo)
 			test.args = append(test.args, tmpRepo)
 
-			cmd := getTestBinCmd("TestAppMain", test.args)
+			cmd := getTestBinCmd(test.args)
 
-			_, _ = cmd.CombinedOutput()
+			cmdOut, cmdErr := cmd.CombinedOutput()
 
 			got := cmd.ProcessState.ExitCode()
+
+			// Debug
+			showCmdOutput(cmdOut, cmdErr)
 
 			var bv buildVersion
 
@@ -46,6 +52,36 @@ func TestVersionSubCmd(tester *testing.T) {
 			}
 			if bv.CommitHash != test.hash {
 				t.Errorf("unexpected commit hash got %q, want %q", bv.CommitHash, test.hash)
+			}
+			if bv.NextVersion != test.nextVersion {
+				t.Errorf("unexpected next version got %q, want %q", bv.NextVersion, test.nextVersion)
+			}
+		})
+	}
+}
+
+func TestVersionSubCmdInvalidInput(tester *testing.T) {
+	var tests = []struct {
+		name     string
+		wantCode int
+		args     []string
+	}{
+		{"notARepo", 1, []string{"version", "repo-00"}},
+	}
+
+	for _, test := range tests {
+		tester.Run(test.name, func(t *testing.T) {
+			cmd := getTestBinCmd(test.args)
+
+			cmdOut, cmdErr := cmd.CombinedOutput()
+
+			got := cmd.ProcessState.ExitCode()
+
+			// Debug
+			showCmdOutput(cmdOut, cmdErr)
+
+			if got != test.wantCode {
+				t.Errorf("unexpected error on exit. want %q, got %q", test.wantCode, got)
 			}
 		})
 	}

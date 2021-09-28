@@ -14,13 +14,14 @@ import (
 const (
 	fixturesDir = "testdata"
 	testTmp     = "tmp"
-	// SubCmdFlags space separated list of command line flags.
-	SubCmdFlags = "RECURSIVE_TEST_FLAGS"
+	// subCmdFlags space separated list of command line flags.
+	subCmdFlags = "RECURSIVE_TEST_FLAGS"
+	testDebug   = false
 )
 
 func TestMain(m *testing.M) {
 	// ONLY run this code when this test binary has been called directly.
-	if os.Getenv(SubCmdFlags) != "" {
+	if os.Getenv(subCmdFlags) != "" {
 		runAppMain()
 	}
 
@@ -47,9 +48,9 @@ func xTestCallingMain(tester *testing.T) {
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
-			cmd := getTestBinCmd("TestAppMain", test.args)
+			cmd := getTestBinCmd(test.args)
 
-			out, sce := cmd.CombinedOutput()
+			_, cmdErr := cmd.CombinedOutput()
 
 			// get exit code.
 			got := cmd.ProcessState.ExitCode()
@@ -58,10 +59,9 @@ func xTestCallingMain(tester *testing.T) {
 				t.Errorf("got %q, want %q", got, test.wantCode)
 			}
 
-			if sce != nil {
-				fmt.Printf("\nBEGIN sub-command stdout:\n%v\n\n", string(out))
-				fmt.Printf("stderr:\n%v\n", sce.Error())
-				fmt.Print("\nEND sub-command\n\n")
+			if cmdErr != nil {
+				fmt.Printf("\nBEGIN sub-command stderr:\n%v", cmdErr.Error())
+				fmt.Print("END sub-command\n")
 			}
 		})
 	}
@@ -69,7 +69,7 @@ func xTestCallingMain(tester *testing.T) {
 
 // Used for running the application's main function from other test.
 func runAppMain() {
-	args := strings.Split(os.Getenv(SubCmdFlags), " ")
+	args := strings.Split(os.Getenv(subCmdFlags), " ")
 	os.Args = append([]string{os.Args[0]}, args...)
 
 	// Debug stmt
@@ -79,7 +79,7 @@ func runAppMain() {
 }
 
 // getTestBinCmd will run the binary build for these test; if you have a `TestMain`, it will be run automatically.
-func getTestBinCmd(testFunc string, args []string) *exec.Cmd {
+func getTestBinCmd(args []string) *exec.Cmd {
 	// call the generated test binary directly
 	// Have it the function runAppMain.
 	cmd := exec.Command(os.Args[0], "-args", strings.Join(args, " "))
@@ -87,7 +87,7 @@ func getTestBinCmd(testFunc string, args []string) *exec.Cmd {
 	_, filename, _, _ := runtime.Caller(0)
 	cmd.Dir = path.Dir(filename)
 	// Pass an environment variable for us to know when we have called this test binary directly.
-	subEnvVar := SubCmdFlags + "=" + strings.Join(args, " ")
+	subEnvVar := subCmdFlags + "=" + strings.Join(args, " ")
 	cmd.Env = append(os.Environ(), subEnvVar)
 
 	return cmd
@@ -106,5 +106,21 @@ func quiet() func() {
 		os.Stdout = sOut
 		os.Stderr = sErr
 		log.SetOutput(os.Stderr)
+	}
+}
+
+func showCmdOutput(cmdOut []byte, cmdErr error) {
+	if !testDebug {
+		return
+	}
+
+	if cmdOut != nil {
+		fmt.Printf("\nBEGIN sub-command out:\n%v", string(cmdOut))
+		fmt.Print("END sub-command\n")
+	}
+
+	if cmdErr != nil {
+		fmt.Printf("\nBEGIN sub-command stderr:\n%v", cmdErr.Error())
+		fmt.Print("END sub-command\n")
 	}
 }
