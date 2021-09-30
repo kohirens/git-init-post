@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"regexp"
 	"runtime"
 	"strings"
 	"testing"
@@ -18,18 +17,12 @@ const (
 	// subCmdFlags space separated list of command line flags.
 	subCmdFlags = "RECURSIVE_TEST_FLAGS"
 )
-var (
-	testDebug bool
-)
 
 func TestMain(m *testing.M) {
-	// ONLY run this code when this test binary has been called directly.
+	// Only runs when this environment variable is set.
 	if os.Getenv(subCmdFlags) != "" {
 		runAppMain()
 	}
-	args := strings.Join(os.Args, " ")
-	re := regexp.MustCompile(`-test\.v=true`)
-	testDebug = re.Match([]byte(args))
 
 	// delete all tmp files before running all test, but leave them afterward for manual inspection.
 	_ = os.RemoveAll(testTmp)
@@ -84,7 +77,7 @@ func runAppMain() {
 	main()
 }
 
-// getTestBinCmd will run the binary build for these test; if you have a `TestMain`, it will be run automatically.
+// getTestBinCmd return a command to run your app (test) binary directly; `TestMain`, will be run automatically.
 func getTestBinCmd(args []string) *exec.Cmd {
 	// call the generated test binary directly
 	// Have it the function runAppMain.
@@ -92,7 +85,10 @@ func getTestBinCmd(args []string) *exec.Cmd {
 	// Run in the context of the source directory.
 	_, filename, _, _ := runtime.Caller(0)
 	cmd.Dir = path.Dir(filename)
-	// Pass an environment variable for us to know when we have called this test binary directly.
+	// Set an environment variable
+	// 1. Only exist for the life of the test that calls this function.
+	// 2. Passes arguments/flag to your app
+	// 3. Lets TestMain know when to run the main function.
 	subEnvVar := subCmdFlags + "=" + strings.Join(args, " ")
 	cmd.Env = append(os.Environ(), subEnvVar)
 
@@ -116,7 +112,7 @@ func quiet() func() {
 }
 
 func showCmdOutput(cmdOut []byte, cmdErr error) {
-	if !testDebug {
+	if !testing.Verbose() {
 		return
 	}
 
