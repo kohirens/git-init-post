@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -98,6 +99,7 @@ func getCommitHash(repoPath, tag string) (commitHash string, err error) {
 	return
 }
 
+// getNextVersion Get the next calculated semantic version.
 func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 	nextVer = "0.1.0"
 	revRange := ""
@@ -105,51 +107,73 @@ func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 	if tag != "HEAD" {
 		revRange = tag + "..HEAD"
 	}
+
+	var sco []byte
+	var sce, err1 error
+	var exitCode int
 	// TODO: Handle really large amounts of git logs efficiently.
 	// Look at all commit logs since the last tag (maybe only annotated):
-	sco, sce, exitCode, err1 := runRepoCmd(repoPath, "log", "--format=medium", revRange)
-	if err1 != nil {
+	if revRange == "" {
+		sco, sce, exitCode, err1 = runRepoCmd(repoPath, "log", "--format=medium")
+	} else {
+		sco, sce, exitCode, err1 = runRepoCmd(repoPath, "log", "--format=medium", revRange)
+		if err1 != nil {
+			_ = fmt.Errorf("error retrieving git logs: %v", err1.Error())
+			return
+		}
+	}
+
+	if sce != nil && exitCode != 0 {
 		return
 	}
 
-	if sce == nil && exitCode == 0 {
-		commitLogs := string(sco)
-		if len(commitLogs) > 0 {
-			ver := strings.Split(tag, ".")
-			// TODO: Look for "BREAKING CHANGE" to increment major version
-			if strings.Contains(commitLogs, "BREAKING CHANGE\n") {
-				nextVerReason = "BREAKING CHANGE keyword found in git logs."
-				major, err2 := strconv.ParseInt(ver[0], 10, 64)
-				if err2 != nil {
-					nextVer = ""
-					nextVerReason = "unable to convert string to int"
-				}
-				ver[0] = strconv.FormatInt(major+1, 10)
-				// Look for "add:" to increment the minor version
-			} else if strings.Contains(commitLogs, "add:") {
-				nextVerReason = "add: keyword found in git logs."
-				major, err2 := strconv.ParseInt(ver[1], 10, 64)
-				if err2 != nil {
-					nextVer = ""
-					nextVerReason = "unable to convert string to int"
-				}
-				ver[1] = strconv.FormatInt(major+1, 10)
-			} else {
-				nextVerReason = "no new features on breaking changed detected in the git logs"
-				major, err2 := strconv.ParseInt(ver[2], 10, 64)
-				if err2 != nil {
-					nextVer = ""
-					nextVerReason = "unable to convert string to int"
-				}
-				ver[2] = strconv.FormatInt(major+1, 10)
-			}
-			nextVer = strings.Join(ver, ".")
-		}
+	commitLogs := string(sco)
+	if len(commitLogs) < 0 {
+		return
 	}
+
+	re := regexp.MustCompile(`rel:\s(\d+\.\d+\.\d+)`)
+	res := re.FindStringSubmatch(commitLogs)
+	// Look for commit message format "rel: x.x.x"
+	if len(res) > 0 {
+		nextVerReason = "`rel:` type was found in the git logs from the last release to the current HEAD"
+		nextVer = res[1]
+		return
+	}
+
+	ver := strings.Split(tag, ".")
+	if tag == "HEAD" || len(ver) < 3 {
+		nextVerReason = "no previous tags detected"
+		return
+	}
+
+	// Look for "BREAKING CHANGE" to increment major version
+	if strings.Contains(commitLogs, "BREAKING CHANGE\n") {
+		// TODO: Use a lib to handle incrementing the semantic version number.
+		ver[0], nextVer, nextVerReason = incrementNumber(ver[0], nextVer, "`BREAKING CHANGE` keyword found in git logs")
+
+	} else if strings.Contains(commitLogs, "add: ") { // Look for "add:" to increment the minor version
+		ver[1], nextVer, nextVerReason = incrementNumber(ver[1], nextVer, "add: keyword found in git logs")
+
+	} else { // Increment patch version
+		ver[2], nextVer, nextVerReason = incrementNumber(ver[2], nextVer, "no new features or breaking changed detected in the git logs")
+	}
+	nextVer = strings.Join(ver, ".")
 
 	return
 }
 
+// incrementNumber add 1 to a numeric string, on failure return numeric number and the reason it failed.
+func incrementNumber(a, nv, nvr string) (string, string, string) {
+	ret, err1 := strconv.ParseInt(a, 10, 64)
+	if err1 != nil {
+		return a, "", fmt.Sprintf("unable to increment %q numeric string by 1, reason: %v", a, err1.Error())
+	}
+
+	return strconv.FormatInt(ret+1, 10), nv, nvr
+}
+
+// runRepoCmd run a command against the repository.
 func runRepoCmd(repoPath string, args ...string) (cmdOut []byte, cmdErr error, exitCode int, err error) {
 	// Remember the current working directory
 	cwd, err1 := os.Getwd()
@@ -162,7 +186,6 @@ func runRepoCmd(repoPath string, args ...string) (cmdOut []byte, cmdErr error, e
 	err2 := os.Chdir(repoPath)
 	if err2 != nil {
 		err = err2
-		fmt.Printf("\nerr2: %v\n", err2.Error())
 		return
 	}
 	// Run an arbitrary git command.

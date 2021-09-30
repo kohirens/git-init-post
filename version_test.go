@@ -20,6 +20,7 @@ func TestVersionSubCmd(tester *testing.T) {
 	}{
 		{"withGitTag", 0, []string{"version"}, "1.0.0", "a7f111c23f68c3b7fb8fefb7b8cd57cd04879f2a", "repo-01", "1.0.1"},
 		{"withoutGitTag", 0, []string{"version"}, "HEAD", "bb062f4b4c8df46b08f824c185641747b128ebf8", "repo-02", "0.1.0"},
+		{"withReleaseCommitMsg", 0, []string{"version"}, "HEAD", "f34f896ab7b88e49b4b5e45ac0d6385fcf3549c3", "repo-03", "0.2.0"},
 	}
 
 	for _, test := range tests {
