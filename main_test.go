@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"runtime"
 	"strings"
 	"testing"
@@ -16,7 +17,9 @@ const (
 	testTmp     = "tmp"
 	// subCmdFlags space separated list of command line flags.
 	subCmdFlags = "RECURSIVE_TEST_FLAGS"
-	testDebug   = false
+)
+var (
+	testDebug bool
 )
 
 func TestMain(m *testing.M) {
@@ -24,6 +27,9 @@ func TestMain(m *testing.M) {
 	if os.Getenv(subCmdFlags) != "" {
 		runAppMain()
 	}
+	args := strings.Join(os.Args, " ")
+	re := regexp.MustCompile(`-test\.v=true`)
+	testDebug = re.Match([]byte(args))
 
 	// delete all tmp files before running all test, but leave them afterward for manual inspection.
 	_ = os.RemoveAll(testTmp)
