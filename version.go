@@ -1,5 +1,5 @@
 // Responsible for getting the version of an application and generating
-// a `version.go` file to include in the applications' go:build process
+// a `build-version.json` file to include in the applications' build process
 // for the purpose of displaying version information.
 
 package main
@@ -30,7 +30,13 @@ func versionMain(af *applicationFlags) error {
 	if len(af.args) > 0 {
 		repoPath = af.args[0]
 	}
-	//
+
+	return BuildVersionFile(repoPath)
+}
+
+// BuildVersionFile build a JSON file with version info.
+func BuildVersionFile(repoPath string) error {
+	// Check the path exist.
 	fileObj, err := os.Stat(repoPath)
 	if os.IsNotExist(err) || !fileObj.IsDir() {
 		return fmt.Errorf("repository path does not exists: %v", repoPath)
