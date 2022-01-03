@@ -3,7 +3,8 @@ ARG USER_UID='1000'
 ARG USER_GID='1000'
 ARG USER_GROUP='app_users'
 ARG REPO='github.com/kohirens/git-tool-belt'
-ARG GLIBC_VER='2.33-r0'
+ARG GLIBC_VER='2.34-r0'
+ARG GH_VER='2.4.0'
 
 FROM golang:1.16-alpine3.14 AS dev
 
@@ -94,6 +95,30 @@ ARG USER_NAME
 ARG USER_UID
 ARG USER_GID
 ARG USER_GROUP
+ARG GH_VER
+ARG GH_FILE="gh_${GH_VER}_linux_amd64"
+
+ENV GH_VER=${GH_VER}
+ENV GH_FILE=${GH_FILE}
+
+RUN apk --no-progress --purge --no-cache upgrade \
+ && apk --no-progress --purge --no-cache add --upgrade \
+    bash \
+    curl \
+    git \
+    openssh \
+ && apk --no-progress --purge --no-cache upgrade \
+ && rm -vrf /var/cache/apk/* \
+ && rm -rf /tmp/*
+
+# Install Github CLI tool.
+RUN cd tmp \
+ && curl -LO https://github.com/cli/cli/releases/download/v${GH_VER}/${GH_FILE}.tar.gz \
+ && tar -xzf ${GH_FILE}.tar.gz \
+ && chmod +x ${GH_FILE}/bin/gh \
+ && mv ${GH_FILE}/bin/gh /usr/local/bin \
+ && rm -rf ${GH_FILE}.tar.gz ${GH_FILE} \
+ && gh --version
 
 # Add a non-root group and user, helpful if you dev on Linux.
 RUN addgroup --system --gid ${USER_GID} ${USER_GROUP} \
