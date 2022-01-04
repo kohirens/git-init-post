@@ -128,15 +128,10 @@ RUN addgroup --system --gid ${USER_GID} ${USER_GROUP} \
     --uid ${USER_UID} \
     ${USER_NAME}
 
+COPY --from=build /home/${USER_NAME}/bin/git-tool-belt /usr/local/bin
+COPY --from=build /home/${USER_NAME}/bin/git-chglog /usr/local/bin
+
 USER ${USER_NAME}
-
-# Make directories with correct permissions
-RUN mkdir -p ~/bin
-
-COPY --from=build --chown=${USER_NAME}:${USER_GROUP} /home/${USER_NAME}/bin/git-tool-belt /home/${USER_NAME}/bin
-COPY --from=build --chown=${USER_NAME}:${USER_GROUP} /home/${USER_NAME}/bin/git-chglog /home/${USER_NAME}/bin
-
-ENV PATH="/home/${USER_NAME}/bin:${PATH}"
 
 ENTRYPOINT [ "git-tool-belt" ]
 
