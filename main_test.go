@@ -20,7 +20,7 @@ const (
 
 func TestMain(m *testing.M) {
 	// Only runs when this environment variable is set.
-	if os.Getenv(subCmdFlags) != "" {
+	if _, ok := os.LookupEnv(subCmdFlags); ok {
 		runAppMain()
 	}
 
