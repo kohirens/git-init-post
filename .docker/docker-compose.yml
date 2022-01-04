@@ -9,7 +9,7 @@ services:
             dockerfile: '.docker/Dockerfile'
             context: '..'
             target: 'dev'
-        image: 'kohirens/git-tool-belt:${BUILD_VER}'
+        image: 'kohirens/git-tool-belt:dev-${BUILD_VER}'
         volumes:
             - '../:/home/${USER_NAME}/src/${REPO}'
             - '~/.ssh/known_hosts:/home/${USER_NAME}/.ssh/known_hosts'
