@@ -106,6 +106,7 @@ RUN apk --no-progress --purge --no-cache upgrade \
     bash \
     curl \
     git \
+    jq \
     openssh \
  && apk --no-progress --purge --no-cache upgrade \
  && rm -vrf /var/cache/apk/* \
