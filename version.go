@@ -157,9 +157,12 @@ func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 	if strings.Contains(commitLogs, "BREAKING CHANGE\n") {
 		// TODO: Use a lib to handle incrementing the semantic version number.
 		ver[0], nextVer, nextVerReason = incrementNumber(ver[0], nextVer, "`BREAKING CHANGE` keyword found in git logs")
+		ver[1] = "0"
+		ver[2] = "0"
 
 	} else if strings.Contains(commitLogs, "add: ") { // Look for "add:" to increment the minor version
 		ver[1], nextVer, nextVerReason = incrementNumber(ver[1], nextVer, "add: keyword found in git logs")
+		ver[2] = "0"
 
 	} else { // Increment patch version
 		ver[2], nextVer, nextVerReason = incrementNumber(ver[2], nextVer, "no new features or breaking changed detected in the git logs")
