@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"os"
-	"os/exec"
 	"testing"
 )
 
@@ -25,7 +23,7 @@ func TestVersionSubCmd(tester *testing.T) {
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
-			tmpRepo := setupARepository(test.repo)
+			tmpRepo := setupARepository(test.repo, test.repo)
 			test.args = append(test.args, tmpRepo)
 
 			cmd := getTestBinCmd(test.args)
@@ -86,17 +84,4 @@ func TestVersionSubCmdInvalidInput(tester *testing.T) {
 			}
 		})
 	}
-}
-
-func setupARepository(repoName string) string {
-	tmpRepoPath := testTmp + PS + repoName
-
-	srcRepo := "." + PS + fixturesDir + PS + repoName + ".bundle"
-	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, tmpRepoPath)
-	_, _ = cmd.CombinedOutput()
-	if ec := cmd.ProcessState.ExitCode(); ec != 0 {
-		log.Panicf("error un-bundling %q to a temporary repo %q for a unit test", srcRepo, tmpRepoPath)
-	}
-
-	return tmpRepoPath
 }

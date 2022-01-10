@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
@@ -180,27 +179,4 @@ func incrementNumber(a, nv, nvr string) (string, string, string) {
 	}
 
 	return strconv.FormatInt(ret+1, 10), nv, nvr
-}
-
-// runRepoCmd run a command against the repository.
-func runRepoCmd(repoPath string, args ...string) (cmdOut []byte, cmdErr error, exitCode int, err error) {
-	// Remember the current working directory
-	cwd, err1 := os.Getwd()
-	defer os.Chdir(cwd)
-	if err1 != nil {
-		err = err1
-		return
-	}
-	// Change into the repository directory.
-	err2 := os.Chdir(repoPath)
-	if err2 != nil {
-		err = err2
-		return
-	}
-	// Run an arbitrary git command.
-	cmd := exec.Command("git", args...)
-	cmdOut, cmdErr = cmd.CombinedOutput()
-	exitCode = cmd.ProcessState.ExitCode()
-
-	return
 }
