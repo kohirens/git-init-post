@@ -24,6 +24,9 @@ func (af *applicationFlags) parseSubcommands(cliArgs []string) error {
 
 	case "version":
 		af.subCmd = "version"
+
+	case "taggable":
+		af.subCmd = "taggable"
 	}
 
 	return nil
