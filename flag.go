@@ -9,7 +9,7 @@ import (
 type applicationFlags struct {
 	args     []string
 	subCmd   string
-	version  *flag.FlagSet
+	version  *versionSubCmd
 	taggable *taggableSubCmd
 }
 
@@ -17,6 +17,11 @@ type taggableSubCmd struct {
 	fs          *flag.FlagSet
 	commitRange *string
 	repo        *string
+}
+
+type versionSubCmd struct {
+	fs   *flag.FlagSet
+	repo *string
 }
 
 const (
@@ -27,13 +32,16 @@ const (
 // define All application flags.
 func (af *applicationFlags) define() {
 	// version sub-command
-	appFlags.version = flag.NewFlagSet("version", flag.ContinueOnError)
+	appFlags.version = &versionSubCmd{
+		fs: flag.NewFlagSet("version", flag.ContinueOnError),
+	}
+	af.version.repo = af.version.fs.String("repo", "", flagUsages["repo"])
 	// taggable sub-command
 	af.taggable = &taggableSubCmd{
 		fs: flag.NewFlagSet(taggable, flag.ExitOnError),
 	}
-	af.taggable.commitRange = af.taggable.fs.String("commitRange", "", flagUsages["taggableCommitRange"])
-	af.taggable.repo = af.taggable.fs.String("repo", "", flagUsages["taggableRepo"])
+	af.taggable.commitRange = af.taggable.fs.String("commitRange", "", flagUsages["commitRange"])
+	af.taggable.repo = af.taggable.fs.String("repo", "", flagUsages["repo"])
 }
 
 // check Verify that all flags are set appropriately.
@@ -67,6 +75,7 @@ func (af *applicationFlags) parseSubcommands() error {
 
 	case version:
 		af.subCmd = version
+		return af.version.fs.Parse(af.args[1:])
 	case taggable:
 		af.subCmd = taggable
 		return af.taggable.fs.Parse(af.args[1:])
