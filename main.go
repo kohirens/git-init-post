@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 )
@@ -11,10 +12,11 @@ const (
 	dirMode = 0774
 )
 
+// appFlags Is what you use at runtime, it is the implementation of the applicationFlags type.
 var appFlags = new(applicationFlags)
 
 func init() {
-	appFlags.version = flag.NewFlagSet("version", flag.ContinueOnError)
+	appFlags.define()
 }
 
 func main() {
@@ -30,15 +32,25 @@ func main() {
 	flag.Parse()
 
 	appFlags.parse(flag.Args())
-	e := appFlags.parseSubcommands(flag.Args())
-	if e != nil {
+
+	if e := appFlags.parseSubcommands(); e != nil {
 		mainErr = e
 		return
 	}
 
-	if appFlags.subCmd == "version" {
+	if e := appFlags.check(); e != nil {
+		mainErr = e
+		return
+	}
+
+	if appFlags.subCmd == version {
 		if e := versionMain(appFlags); e != nil {
 			mainErr = e
 		}
+	}
+
+	if appFlags.subCmd == taggable {
+		fmt.Printf("%v", IsTaggable(appFlags))
+		return
 	}
 }
