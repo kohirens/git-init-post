@@ -24,7 +24,7 @@ func TestVersionSubCmd(tester *testing.T) {
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
 			tmpRepo := setupARepository(test.repo, test.repo)
-			test.args = append(test.args, tmpRepo)
+			test.args = append(test.args, "-repo "+tmpRepo)
 
 			cmd := getTestBinCmd(test.args)
 
@@ -65,7 +65,7 @@ func TestVersionSubCmdInvalidInput(tester *testing.T) {
 		wantCode int
 		args     []string
 	}{
-		{"notARepo", 1, []string{"version", "repo-00"}},
+		{"notARepo", 1, []string{"version", "-repo repo-00"}},
 	}
 
 	for _, test := range tests {
