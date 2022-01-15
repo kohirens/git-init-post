@@ -5,28 +5,26 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"runtime"
 )
 
 // getLatestChanges Get changes since the specified tag.
-func getLatestChanges(repoPath, tag string) ([]byte, error) {
-	revRange := ""
-	// Reduce the revision range from the last tag to the most recent commit.
-	if tag != "HEAD" {
-		revRange = tag + "..HEAD"
+func getLatestChanges(repoPath, commitRange string) ([]byte, error) {
+	revRange := "-1" // Default to last commit.
+	// set a user specified revision range .
+	if commitRange != "" {
+		revRange = commitRange
 	}
 
 	var sco []byte
 	var sce, err1 error
 	var exitCode int
-	// Look at all commit logs since the last tag (maybe only annotated) and dump into a file:
-	if revRange == "" {
-		sco, sce, exitCode, err1 = runRepoCmd(repoPath, "log", "--format=medium")
-	} else {
-		sco, sce, exitCode, err1 = runRepoCmd(repoPath, "log", "--format=medium", revRange)
-		if err1 != nil {
-			return nil, fmt.Errorf("error retrieving git logs for %s: %v", revRange, err1.Error())
-		}
+
+	sco, sce, exitCode, err1 = runRepoCmd(repoPath, "log", "--format=medium", revRange)
+	if err1 != nil {
+		return nil, fmt.Errorf("error retrieving git logs for %s: %v", revRange, err1.Error())
 	}
+
 	if sce != nil && exitCode != 0 {
 		return nil, fmt.Errorf("sce error retrieving git logs: %v", sce.Error())
 	}
@@ -34,8 +32,8 @@ func getLatestChanges(repoPath, tag string) ([]byte, error) {
 	return sco, nil
 }
 
-// hasTags Looks for tag in each commit line to indicate if there are changes to tag.
-func hasTags(repoPath, tag string) bool {
+// hasUnreleasedCommitsWithTags Looks for tag in each unreleased commit line which will indicate if there are changes to tag.
+func hasUnreleasedCommitsWithTags(repoPath, tag string) bool {
 	retVal := false
 	repoLogs, err := getLatestChanges(repoPath, tag)
 

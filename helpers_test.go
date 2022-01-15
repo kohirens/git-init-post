@@ -14,16 +14,16 @@ func TestHasChangesToTag(tester *testing.T) {
 		bundle string
 		repo   string
 	}{
-		{"withChangeTag", true, "1.0.0", "repo-01", "hasTags-01"},
-		{"withoutTags", false, "HEAD", "repo-02", "hasTags-02"},
-		{"withReleaseTag", true, "HEAD", "repo-03", "hasTags-03"},
+		{"withChangeTag", true, "1.0.0..HEAD", "repo-01", "hasUnreleasedCommitsWithTags-01"},
+		{"withoutTags", false, "HEAD", "repo-02", "hasUnreleasedCommitsWithTags-02"},
+		{"withReleaseTag", true, "HEAD", "repo-03", "hasUnreleasedCommitsWithTags-03"},
 	}
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
 			tmpRepo := setupARepository(test.repo, test.bundle)
 
-			got := hasTags(tmpRepo, test.tag)
+			got := hasUnreleasedCommitsWithTags(tmpRepo, test.tag)
 
 			if got != test.want {
 				t.Errorf("want %v, got %v", test.want, got)
