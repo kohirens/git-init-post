@@ -9,14 +9,20 @@ Currently, special tags refer to commit message which begin with a tag of:
 
 | Tag             | Description                                                                    |
 |-----------------|--------------------------------------------------------------------------------|
-| `[add]: `       | Marks that a new feature was added and increments the minor version.           |
-| `[chg]: `       | A standard change and increments the patch version.                            |
-| `[dep]: `       | Indicates a feature is deprecated and will increment the patch number.         |
-| `[rmv]: `       | Marks a feature removed but not a breaking change, increments the patch number. |
-| `[rel]: x.x.x`  | Will use the version number specified after the tag.                           |
+| `add: `         | Marks that a new feature was added and increments the minor version.           |
+| `chg: `         | A standard change and increments the patch version.                            |
+| `dep: `         | Indicates a feature is deprecated and will increment the patch number.         |
+| `rmv: `         | Marks a feature removed but not a breaking change, increments the patch number. |
+| `rel: x.x.x`    | Will use the version number specified after the tag.                           |
 | BREAKING CHANGE | Will cause the major number to increment by 1.                                 |
 
-`git-tool-belt version` or `git-tool-belt version -repo my/git/repo`
+### Examples
+
+`git-tool-belt version`
+
+or
+
+`git-tool-belt version -repo my/git/repo`
 
 **Use Cases**
 
