@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"os/exec"
 	"testing"
 )
@@ -34,6 +35,11 @@ func TestHasChangesToTag(tester *testing.T) {
 
 func setupARepository(repoName, bundleName string) string {
 	tmpRepoPath := testTmp + PS + repoName
+
+	fileInfo, err1 := os.Stat(tmpRepoPath)
+	if (err1 == nil && fileInfo.IsDir()) || os.IsExist(err1) {
+		return tmpRepoPath
+	}
 
 	srcRepo := "." + PS + fixturesDir + PS + bundleName + ".bundle"
 	cmd := exec.Command("git", "clone", "-b", "main", srcRepo, tmpRepoPath)
