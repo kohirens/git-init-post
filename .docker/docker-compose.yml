@@ -4,12 +4,12 @@ services:
     cli:
         build:
             args:
-                USER_NAME: '${USER_NAME}'
-                REPO: '${REPO}'
+                USER_NAME: '${USER_NAME:-app}'
+                REPO: '${REPO:-github.com/kohirens/git-tool-belt}'
             dockerfile: '.docker/Dockerfile'
             context: '..'
-            target: 'dev'
-        image: 'kohirens/git-tool-belt:dev-${BUILD_VER}'
+            target: '${BTARGET:-dev}'
+        image: 'kohirens/git-tool-belt:${BUILD_VER:-dev}'
         volumes:
             - '../:/home/${USER_NAME}/src/${REPO}'
             - '~/.ssh/known_hosts:/home/${USER_NAME}/.ssh/known_hosts'
