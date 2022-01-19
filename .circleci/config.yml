@@ -38,7 +38,8 @@ jobs:
 workflows:
   pull-request:
     jobs:
-      - co
+      - co:
+          context: orb-publishing
       - run-test:
           requires: [ co ]
           context: orb-publishing
