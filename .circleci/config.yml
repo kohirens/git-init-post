@@ -23,13 +23,13 @@ jobs:
 
   run-test:
     docker:
-      - image: kohirens/git-tool-belt:0.8.0
-        auth:
-          username: ${DH_USER}
-          password: ${DH_PASS}
+      - image: circleci/golang:1.17
     steps:
       - attach_workspace:
           at: .
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.sum" }}
       - run:
           name: "Unit test"
           command: |
@@ -41,4 +41,3 @@ workflows:
       - co
       - run-test:
           requires: [ co ]
-          context: orb-publishing
