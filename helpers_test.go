@@ -24,7 +24,14 @@ func TestHasChangesToTag(tester *testing.T) {
 		tester.Run(test.name, func(t *testing.T) {
 			tmpRepo := setupARepository(test.repo, test.bundle)
 
-			got := hasUnreleasedCommitsWithTags(tmpRepo, test.tag)
+			af := &applicationFlags{
+				taggable: &taggableSubCmd{
+					commitRange: &test.tag,
+					verbose:     false,
+				},
+			}
+
+			got := hasUnreleasedCommitsWithTags(tmpRepo, af)
 
 			if got != test.want {
 				t.Errorf("want %v, got %v", test.want, got)

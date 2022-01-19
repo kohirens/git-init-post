@@ -17,6 +17,7 @@ type taggableSubCmd struct {
 	fs          *flag.FlagSet
 	commitRange *string
 	repo        *string
+	verbose     bool
 }
 
 type versionSubCmd struct {
@@ -42,6 +43,8 @@ func (af *applicationFlags) define() {
 	}
 	af.taggable.commitRange = af.taggable.fs.String("commitRange", "", flagUsages["commitRange"])
 	af.taggable.repo = af.taggable.fs.String("repo", "", flagUsages["repo"])
+	af.taggable.fs.BoolVar(&af.taggable.verbose, "v", false, flagUsages["taggableVerbose"])
+	af.taggable.fs.BoolVar(&af.taggable.verbose, "verbose", false, flagUsages["taggableVerbose"])
 }
 
 // check Verify that all flags are set appropriately.
