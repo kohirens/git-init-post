@@ -23,7 +23,7 @@ jobs:
 
   run-test:
     docker:
-      - image: kohirens/git-tool-belt:0.7.0
+      - image: kohirens/git-tool-belt:0.8.0
         auth:
           username: ${DH_USER}
           password: ${DH_PASS}
@@ -39,6 +39,6 @@ workflows:
   pull-request:
     jobs:
       - co
-      - runt-test:
+      - run-test:
           requires: [ co ]
           context: orb-publishing
