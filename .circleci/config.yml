@@ -19,7 +19,7 @@ jobs:
             - "/go/pkg/mod"
       - persist_to_workspace:
           root: .
-          paths: [./* ]
+          paths: [ ./* ]
 
   run-test:
     docker:
@@ -27,9 +27,6 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
       - run:
           name: "Unit test"
           command: |
