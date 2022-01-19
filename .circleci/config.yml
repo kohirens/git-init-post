@@ -4,7 +4,7 @@ jobs:
   co:
     working_directory: ~/repo
     docker:
-      - image: circleci/golang:1.17.
+      - image: circleci/golang:1.17
     steps:
       - checkout
       - restore_cache:
@@ -38,8 +38,7 @@ jobs:
 workflows:
   pull-request:
     jobs:
-      - co:
-          context: orb-publishing
+      - co
       - run-test:
           requires: [ co ]
           context: orb-publishing
