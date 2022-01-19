@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
-	"runtime"
 )
 
 // getLatestChanges Get changes since the specified tag.
