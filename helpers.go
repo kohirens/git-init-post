@@ -54,7 +54,7 @@ func hasUnreleasedCommitsWithTags(repoPath string, af *applicationFlags) bool {
 	if len(res) > 0 {
 		retVal = true
 	}
-	// Look for commit message format "<tag>>: "
+	// Look for commit message format "<tag>: "
 	res2 := tagReg.FindStringSubmatch(commitLogs)
 	if len(res2) > 0 {
 		retVal = true
