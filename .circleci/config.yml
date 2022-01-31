@@ -1,5 +1,14 @@
 version: 2.1
 
+orbs:
+  vro: kohirens/version-release@0.6.1
+
+parameters:
+  ssh-finger:
+    description: SSH fingerprint.
+    type: string
+    default: "73:9b:43:f6:57:91:be:f6:0f:a4:c1:05:40:37:ab:79"
+
 jobs:
   co:
     working_directory: ~/repo
@@ -38,3 +47,27 @@ workflows:
       - co
       - run-test:
           requires: [ co ]
+  # Only run when branch is main
+  # 1. Update the changelog.
+  # 2. Merge the changelog to main.
+  # 3. There is no tagging in process for the commit hash.
+  publish-changelog:
+    jobs:
+      - vro/update-and-merge-changelog:
+          context: orb-publishing
+          filters:
+            branches:
+              only: main
+          pre-steps: [ checkout, attach_workspace: { at: '.' } ]
+          sshFinger: << pipeline.parameters.ssh-finger >>
+  # Only run when the branch is main
+  # 1. Verify there are taggable changes
+  # 2. Publish a release tag.
+  tag-and-release:
+    jobs:
+      - vro/tag-and-release:
+          filters:
+            branches:
+              only: main
+          context: orb-publishing
+          pre-steps: [ checkout, attach_workspace: { at: '.' } ]
