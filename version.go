@@ -71,18 +71,16 @@ func getCurrentVersion(repoPath string) (latestVersion string) {
 
 	// Default to HEAD when no tag.
 	sco, sce, exitCode, err3 := runRepoCmd(repoPath, "tag", "--sort=-version:refname")
-	if err3 != nil {
+	if err3 != nil || sce != nil || exitCode != 0 {
 		latestVersion = ""
 		return
 	}
 
-	if sce == nil && exitCode == 0 {
-		versionsData := bytes.Trim(sco, "\n")
-		if len(versionsData) > 0 {
-			// Split output into an array by newline.
-			versions := bytes.Split(versionsData, []byte("\n"))
-			latestVersion = string(versions[0])
-		}
+	versionsData := bytes.Trim(sco, "\n")
+	if len(versionsData) > 0 {
+		// Split output into an array by newline.
+		versions := bytes.Split(versionsData, []byte("\n"))
+		latestVersion = string(versions[0])
 	}
 
 	return
