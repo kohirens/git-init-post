@@ -74,8 +74,11 @@ func (af *applicationFlags) parse(cliArgs []string) {
 // parseSubcommands Determines if a sub-command was given.
 func (af *applicationFlags) parseSubcommands() error {
 
-	switch af.args[0] {
+	if len(af.args) < 1 {
+		return nil
+	}
 
+	switch af.args[0] {
 	case version:
 		af.subCmd = version
 		return af.version.fs.Parse(af.args[1:])
