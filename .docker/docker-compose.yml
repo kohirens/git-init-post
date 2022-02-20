@@ -4,8 +4,8 @@ services:
     cli:
         build:
             args:
-                USER_NAME: '${USER_NAME:-app}'
-                REPO: '${REPO:-github.com/kohirens/git-tool-belt}'
+                USER_NAME: '${USER_NAME}'
+                REPO: '${REPO}'
             dockerfile: '.docker/Dockerfile'
             context: '..'
             target: '${BTARGET:-dev}'
