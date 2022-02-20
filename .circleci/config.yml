@@ -7,7 +7,7 @@ parameters:
   ssh-finger:
     description: SSH fingerprint.
     type: string
-    default: "73:9b:43:f6:57:91:be:f6:0f:a4:c1:05:40:37:ab:79"
+    default: "4f:88:2a:81:b5:1c:47:5e:68:24:ae:d3:3a:54:95:06"
 
 jobs:
   co:
