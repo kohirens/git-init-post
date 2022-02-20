@@ -9,7 +9,7 @@ import (
 type applicationFlags struct {
 	args     []string
 	subCmd   string
-	semver   *versionSubCmd
+	semver   *semverSubCmd
 	taggable *taggableSubCmd
 }
 
@@ -20,7 +20,7 @@ type taggableSubCmd struct {
 	verbose     bool
 }
 
-type versionSubCmd struct {
+type semverSubCmd struct {
 	fs   *flag.FlagSet
 	repo string
 }
@@ -33,7 +33,7 @@ const (
 // define All application flags.
 func (af *applicationFlags) define() {
 	// semver sub-command
-	appFlags.semver = &versionSubCmd{
+	appFlags.semver = &semverSubCmd{
 		fs: flag.NewFlagSet("semver", flag.ContinueOnError),
 	}
 	af.semver.fs.StringVar(&af.semver.repo, "repo", "", flagUsages["repo"])
