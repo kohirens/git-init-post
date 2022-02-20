@@ -9,7 +9,7 @@ import (
 type applicationFlags struct {
 	args     []string
 	subCmd   string
-	version  *versionSubCmd
+	semver   *versionSubCmd
 	taggable *taggableSubCmd
 }
 
@@ -27,16 +27,16 @@ type versionSubCmd struct {
 
 const (
 	taggable = "taggable"
-	version  = "version"
+	cSemver  = "semver"
 )
 
 // define All application flags.
 func (af *applicationFlags) define() {
-	// version sub-command
-	appFlags.version = &versionSubCmd{
-		fs: flag.NewFlagSet("version", flag.ContinueOnError),
+	// semver sub-command
+	appFlags.semver = &versionSubCmd{
+		fs: flag.NewFlagSet("semver", flag.ContinueOnError),
 	}
-	af.version.fs.StringVar(&af.version.repo, "repo", "", flagUsages["repo"])
+	af.semver.fs.StringVar(&af.semver.repo, "repo", "", flagUsages["repo"])
 	// taggable sub-command
 	af.taggable = &taggableSubCmd{
 		fs: flag.NewFlagSet(taggable, flag.ExitOnError),
@@ -79,9 +79,9 @@ func (af *applicationFlags) parseSubcommands() error {
 	}
 
 	switch af.args[0] {
-	case version:
-		af.subCmd = version
-		return af.version.fs.Parse(af.args[1:])
+	case cSemver:
+		af.subCmd = cSemver
+		return af.semver.fs.Parse(af.args[1:])
 	case taggable:
 		af.subCmd = taggable
 		return af.taggable.fs.Parse(af.args[1:])

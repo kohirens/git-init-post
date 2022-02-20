@@ -2,7 +2,7 @@
 
 ## Features
 
-## Sub Command "version"
+## Sub Command "semver"
 
 Generate a file `build-version.json` containing current and next tag info based on special tags in the commit messages.
 Currently, special tags refer to commit message which begin with a tag of:

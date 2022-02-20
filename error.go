@@ -5,5 +5,5 @@ var errors = struct {
 	subCmdMissing string
 }{
 	invalidCommitRange: "invalid commit range format. please use for example `commit1..commit2`. Acceptable values are a branch, tag, or hash.",
-	subCmdMissing:      "missing a sub command, either \"version\" or \"taggable\"",
+	subCmdMissing:      "missing a sub command, either \"semver\" or \"taggable\"",
 }

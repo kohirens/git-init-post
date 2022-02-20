@@ -43,8 +43,8 @@ func main() {
 		return
 	}
 
-	if appFlags.subCmd == version {
-		if e := versionMain(appFlags); e != nil {
+	if appFlags.subCmd == cSemver {
+		if e := semverMain(appFlags); e != nil {
 			mainErr = e
 		}
 	}

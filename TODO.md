@@ -6,8 +6,7 @@
     * `go fmt` - to format the project
     * `git-chglog --output CHANGELOG.md` - to update the changelog
     * then append the changes then commit.
-* Output build info to terminal
-* Rename sub-command `version` to something else.
+* Output build info to terminal.
 * Output help for all global and sub-commands.
 * Build and push docker image in CI
 * Build Linux executable and upload to Github.
