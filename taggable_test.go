@@ -14,6 +14,7 @@ func TestIsTaggable(tester *testing.T) {
 		{"manyTagsInCommit", 0, []string{"taggable"}, "repo-01", "taggable-01", "true"},
 		{"noTagInCommit", 0, []string{"taggable"}, "repo-02", "taggable-02", "false"},
 		{"relIneCommit", 0, []string{"taggable"}, "repo-03", "taggable-03", "true"},
+		{"noCurrentTag", 0, []string{"taggable", "-commitRange", "HEAD"}, "repo-04", "taggable-04", "true"},
 	}
 
 	for _, test := range tests {
