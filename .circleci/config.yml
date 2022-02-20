@@ -18,12 +18,12 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - go-mod-v1-{{ checksum "go.sum" }}
+            - go-mod-v1-{{ checksum "go.mod" }}
       - run:
           name: Install Dependencies
           command: go mod tidy
       - save_cache:
-          key: go-mod-v1-{{ checksum "go.sum" }}
+          key: go-mod-v1-{{ checksum "go.mod" }}
           paths:
             - "/go/pkg/mod"
       - persist_to_workspace:
@@ -36,6 +36,9 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - restore_cache:
+          keys:
+            - go-mod-v1-{{ checksum "go.mod" }}
       - run:
           name: "Unit test"
           command: |
