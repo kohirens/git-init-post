@@ -39,3 +39,13 @@ tmpRepo := setupARepository("repo-04", "taggable-04")
 ```
 tempRepo points to the path where the repo was extracted. Also know that this
 function will append ".bundle" to the first parameter to find the actual bundle.
+
+## Build Local Image
+
+1. Start up docker.
+2. Checkout the main branch.
+3. Run the command:
+
+```shell
+$Env:BUILD_VER="0.9.0" ; $Env:BTARGET="release" ; docker compose -f .docker/docker-compose.yml build
+```
