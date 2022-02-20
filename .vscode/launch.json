@@ -18,7 +18,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceFolder}",
-            "args": [ "version" ]
+            "args": [ "semver" ]
         }
     ]
 }

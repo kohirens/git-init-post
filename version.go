@@ -1,6 +1,6 @@
-// Responsible for getting the version of an application and generating
-// a `build-version.json` file to include in the applications' build process
-// for the purpose of displaying version information.
+// Produce semantic version information about a Git repository in JSON format.
+// The content of which can be useful in the build process for the purpose of
+// using as the version details for the application.
 
 package main
 
@@ -23,21 +23,21 @@ type buildVersion struct {
 	NextVersionReason string `json:"nextVersionReason"`
 }
 
-func versionMain(af *applicationFlags) error {
+func semverMain(af *applicationFlags) error {
 	// Default to the current working directory, or set it from the flag.
 	repoPath, _ := os.Getwd()
-	if len(af.version.repo) > 0 {
-		repoPath = af.version.repo
+	if len(af.semver.repo) > 0 {
+		repoPath = af.semver.repo
 	}
 
-	return BuildVersionFile(repoPath)
+	return GetSemverInfo(repoPath)
 }
 
-// BuildVersionFile build a JSON file with version info.
-func BuildVersionFile(repoPath string) error {
+// GetSemverInfo build a JSON file with semver info.
+func GetSemverInfo(repoPath string) error {
 	// Check the path exist.
 	fileObj, err := os.Stat(repoPath)
-	if os.IsNotExist(err) || !fileObj.IsDir() {
+	if err != nil || !fileObj.IsDir() {
 		return fmt.Errorf("repository path does not exists: %v", repoPath)
 	}
 
@@ -56,7 +56,7 @@ func BuildVersionFile(repoPath string) error {
 		return fmt.Errorf("could not JSON encode build version info, reason: %v", err1.Error())
 	}
 
-	// Write the build version info to a JSON file.
+	// Write the info to a JSON file.
 	bvFile := repoPath + PS + buildVersionFile
 	if e := os.WriteFile(bvFile, bvJson, dirMode); e != nil {
 		return fmt.Errorf("could not build %v, reason: %v", bvFile, e.Error())
@@ -150,18 +150,18 @@ func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 		return
 	}
 
-	// Look for "BREAKING CHANGE" to increment major version
+	// Look for "BREAKING CHANGE" to increment major number
 	if strings.Contains(commitLogs, "BREAKING CHANGE\n") {
 		// TODO: Use a lib to handle incrementing the semantic version number.
 		ver[0], nextVer, nextVerReason = incrementNumber(ver[0], nextVer, "`BREAKING CHANGE` keyword found in git logs")
 		ver[1] = "0"
 		ver[2] = "0"
 
-	} else if strings.Contains(commitLogs, "add: ") { // Look for "add:" to increment the minor version
+	} else if strings.Contains(commitLogs, "add: ") { // Look for "add:" to increment the minor number
 		ver[1], nextVer, nextVerReason = incrementNumber(ver[1], nextVer, "add: keyword found in git logs")
 		ver[2] = "0"
 
-	} else { // Increment patch version
+	} else { // Increment patch number
 		ver[2], nextVer, nextVerReason = incrementNumber(ver[2], nextVer, "no new features or breaking changed detected in the git logs")
 	}
 	nextVer = strings.Join(ver, ".")
