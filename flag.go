@@ -56,7 +56,7 @@ func (af *applicationFlags) check() error {
 	if af.subCmd == taggable {
 		rangeFmt := regexp.MustCompile(`[a-zA-Z0-9\.\-_]+\.\.[a-zA-Z0-9\.\-_]+`)
 		res := rangeFmt.FindStringSubmatch(*af.taggable.commitRange)
-		if *af.taggable.commitRange != "" && res == nil {
+		if *af.taggable.commitRange != "HEAD" && *af.taggable.commitRange != "" && res == nil {
 			return fmt.Errorf(errors.invalidCommitRange)
 		}
 	}
