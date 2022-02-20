@@ -31,7 +31,7 @@ func TestHasChangesToTag(tester *testing.T) {
 				},
 			}
 
-			got := hasUnreleasedCommitsWithTags(tmpRepo, af)
+			got := hasUnreleasedCommitsWithTags(tmpRepo, *af.taggable.commitRange, af.taggable.verbose)
 
 			if got != test.want {
 				t.Errorf("want %v, got %v", test.want, got)

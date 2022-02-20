@@ -31,31 +31,29 @@ func getLatestChanges(repoPath, commitRange string) ([]byte, error) {
 	return sco, nil
 }
 
-// hasUnreleasedCommitsWithTags Looks for tag in each unreleased commit line which will indicate if there are changes to tag.
-func hasUnreleasedCommitsWithTags(repoPath string, af *applicationFlags) bool {
-	retVal := false
-	repoLogs, err := getLatestChanges(repoPath, *af.taggable.commitRange)
+// hasUnreleasedCommitsWithTags Looks for special lines in each commit message, in the revision range, which will indicate if there are changes to tag.
+func hasUnreleasedCommitsWithTags(repoPath string, commitRange string, verbose bool) bool {
+	repoLogs, err := getLatestChanges(repoPath, commitRange)
 
 	if err != nil {
-		return retVal
+		return false
 	}
 
+	retVal := false
 	relReg := regexp.MustCompile(`[ \t]+rel:\s{1,4}(\d+\.\d+\.\d+)`)
 	tagReg := regexp.MustCompile(`[ \t]+(add|rmv|chg|fix|dep):\s{1,4}.[^\n]+`)
 
 	commitLogs := string(repoLogs)
 	// verbosity
-	if af.taggable.verbose {
+	if verbose {
 		fmt.Printf("here are the logs:\n%v", commitLogs)
 	}
 	// Look for commit message format "rel: x.x.x"
-	res := relReg.FindStringSubmatch(commitLogs)
-	if len(res) > 0 {
+	if r := relReg.FindStringSubmatch(commitLogs); len(r) > 0 {
 		retVal = true
 	}
 	// Look for commit message format "<tag>: "
-	res2 := tagReg.FindStringSubmatch(commitLogs)
-	if len(res2) > 0 {
+	if r := tagReg.FindStringSubmatch(commitLogs); len(r) > 0 {
 		retVal = true
 	}
 

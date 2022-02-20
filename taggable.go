@@ -15,5 +15,5 @@ func IsTaggable(af *applicationFlags) bool {
 	if af.taggable.verbose {
 		fmt.Printf("repoPath = %q\n", repoPath)
 	}
-	return hasUnreleasedCommitsWithTags(repoPath, af)
+	return hasUnreleasedCommitsWithTags(repoPath, *af.taggable.commitRange, af.taggable.verbose)
 }
