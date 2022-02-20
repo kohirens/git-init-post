@@ -26,8 +26,8 @@ type buildVersion struct {
 func versionMain(af *applicationFlags) error {
 	// Default to the current working directory, or set it from the flag.
 	repoPath, _ := os.Getwd()
-	if len(*af.version.repo) > 0 {
-		repoPath = *af.version.repo
+	if len(af.version.repo) > 0 {
+		repoPath = af.version.repo
 	}
 
 	return BuildVersionFile(repoPath)
