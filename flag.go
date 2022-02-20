@@ -15,14 +15,14 @@ type applicationFlags struct {
 
 type taggableSubCmd struct {
 	fs          *flag.FlagSet
-	commitRange *string
-	repo        *string
+	commitRange string
+	repo        string
 	verbose     bool
 }
 
 type versionSubCmd struct {
 	fs   *flag.FlagSet
-	repo *string
+	repo string
 }
 
 const (
@@ -36,15 +36,15 @@ func (af *applicationFlags) define() {
 	appFlags.version = &versionSubCmd{
 		fs: flag.NewFlagSet("version", flag.ContinueOnError),
 	}
-	af.version.repo = af.version.fs.String("repo", "", flagUsages["repo"])
+	af.version.fs.StringVar(&af.version.repo, "repo", "", flagUsages["repo"])
 	// taggable sub-command
 	af.taggable = &taggableSubCmd{
 		fs: flag.NewFlagSet(taggable, flag.ExitOnError),
 	}
-	af.taggable.commitRange = af.taggable.fs.String("commitRange", "", flagUsages["commitRange"])
-	af.taggable.repo = af.taggable.fs.String("repo", "", flagUsages["repo"])
-	af.taggable.fs.BoolVar(&af.taggable.verbose, "v", false, flagUsages["taggableVerbose"])
-	af.taggable.fs.BoolVar(&af.taggable.verbose, "verbose", false, flagUsages["taggableVerbose"])
+	af.taggable.fs.StringVar(&af.taggable.commitRange, "commitRange", "", flagUsages["commitRange"])
+	af.taggable.fs.StringVar(&af.taggable.repo, "repo", "", flagUsages["repo"])
+	af.taggable.fs.BoolVar(&af.taggable.verbose, "v", false, usageMsgs["taggableVerbose"])
+	af.taggable.fs.BoolVar(&af.taggable.verbose, "verbose", false, usageMsgs["taggableVerbose"])
 }
 
 // check Verify that all flags are set appropriately.
@@ -55,8 +55,8 @@ func (af *applicationFlags) check() error {
 
 	if af.subCmd == taggable {
 		rangeFmt := regexp.MustCompile(`[a-zA-Z0-9\.\-_]+\.\.[a-zA-Z0-9\.\-_]+`)
-		res := rangeFmt.FindStringSubmatch(*af.taggable.commitRange)
-		if *af.taggable.commitRange != "HEAD" && *af.taggable.commitRange != "" && res == nil {
+		res := rangeFmt.FindStringSubmatch(af.taggable.commitRange)
+		if af.taggable.commitRange != "HEAD" && af.taggable.commitRange != "" && res == nil {
 			return fmt.Errorf(errors.invalidCommitRange)
 		}
 	}
