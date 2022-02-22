@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  vro: kohirens/version-release@0.7.5
+  vro: kohirens/version-release@0.8.0
 
 parameters:
   ssh-finger:
@@ -44,6 +44,31 @@ jobs:
           command: |
             go test -v
 
+  publish-image:
+    docker:
+      - image: circleci/golang:1.17
+    steps:
+      - setup_remote_docker
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Build"
+          command: |
+            ls -la .
+            if [ ! -f ./tagged.txt ]; then
+                echo "cannot publish an image release tag file not found"
+                exit 1
+            fi
+            export USER_NAME="app"
+            export REPO="github.com/kohirens/git-tool-belt"
+            export BUILD_VER=$(cat "tagged.txt")
+            echo "BUILD_VER=${BUILD_VER}"
+            export BTARGET="release"
+            docker build --tag "kohirens/git-tool-belt:${BUILD_VER}" --file .docker/Dockerfile .
+            docker login --username "${DH_USER}" --password "${DH_PASS}"
+            docker push "kohirens/git-tool-belt:${BUILD_VER}"
+            docker compose -f .docker/docker-compose.yml build
+
 workflows:
   pull-request:
     jobs:
@@ -71,3 +96,6 @@ workflows:
           requires: [ vro/update-and-merge-changelog ]
           context: orb-publishing
           pre-steps: [ checkout, attach_workspace: { at: '.' } ]
+      - publish-image:
+          requires: [ vro/tag-and-release ]
+          context: orb-publishing
