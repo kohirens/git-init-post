@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="1.0.1"></a>
+## [1.0.1] - 2022-02-22
+### Fixed
+- Missing checkout step when publishing image.
+
+
 <a name="1.0.0"></a>
 ## [1.0.0] - 2022-02-22
 ### Changed
@@ -46,7 +52,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.0.0...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.0.1...HEAD
+[1.0.1]: https://github.com/kohirens/git-tool-belt/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/kohirens/git-tool-belt/compare/0.9.0...1.0.0
 [0.9.0]: https://github.com/kohirens/git-tool-belt/compare/0.2.1...0.9.0
 [0.2.1]: https://github.com/kohirens/git-tool-belt/compare/0.2.0...0.2.1
