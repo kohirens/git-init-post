@@ -6,7 +6,7 @@ ARG REPO='github.com/kohirens/git-tool-belt'
 ARG GLIBC_VER='2.34-r0'
 ARG GH_VER='2.4.0'
 
-FROM golang:1.16-alpine3.14 AS dev
+FROM golang:1.17-alpine3.15 AS dev
 
 ARG USER_NAME
 ARG USER_UID
@@ -51,26 +51,28 @@ RUN addgroup --system --gid ${USER_GID} ${USER_GROUP} \
     --uid ${USER_UID} \
     ${USER_NAME}
 
+COPY .devcontainer/download-vs-code-server.sh .
+RUN chmod +x ./download-vs-code-server.sh && chown -R "${USER_NAME}:${USER_GROUP}" .
+
 USER ${USER_NAME}
 
 # Make directories with correct permissions
-RUN mkdir -p ~/bin
+RUN mkdir -p ~/bin ~/src
+
+WORKDIR "/home/${USER_NAME}/src/${REPO}"
 
 # Install Go helpful dev tools.
 RUN go install github.com/git-chglog/git-chglog/cmd/git-chglog@v0.15.0 \
  && go clean -cache -modcache -testcache
 
-COPY .devcontainer/download-vs-code-server.sh .
 COPY .docker/start.sh /usr/local/bin/start.sh
 
 # Install VS Code Server and Requirements for pre-installing extensions
-RUN chmod +x ./download-vs-code-server.sh && ./download-vs-code-server.sh \
+RUN ./download-vs-code-server.sh \
  && mkdir -p /home/${USER_NAME}/.vscode-server/extensions \
  && mkdir -p /home/${USER_NAME}/.vscode-server-insiders/extensions
 
 ENV PATH="/home/${USER_NAME}/bin:${PATH}"
-
-WORKDIR "/home/${USER_NAME}/src/${REPO}"
 
 ENTRYPOINT [ "sh" ]
 
@@ -86,9 +88,15 @@ ARG REPO
 
 COPY . .
 
+USER root
+
+RUN chown -R "${USER_NAME}:${USER_GROUP}" .
+
+USER ${USER_NAME}
+
 RUN go build && go install
 
-FROM alpine:3.14 AS release
+FROM alpine:3.15 AS release
 
 ARG USER_NAME
 ARG USER_UID

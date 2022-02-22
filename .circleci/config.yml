@@ -48,27 +48,24 @@ jobs:
     docker:
       - image: circleci/golang:1.17
     steps:
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 20.10.11
+          docker_layer_caching: true
       - checkout
       - attach_workspace:
           at: .
       - run:
           name: "Build"
           command: |
-            which sh
             if [ ! -f ./tagged.txt ]; then
                 echo "cannot publish an image release tag file not found"
                 exit 1
             fi
-            export USER_NAME="circleci"
-            export REPO="github.com/kohirens/git-tool-belt"
             export BUILD_VER=$(cat "tagged.txt")
             echo "BUILD_VER=${BUILD_VER}"
-            export BTARGET="release"
-            docker build --tag "kohirens/git-tool-belt:${BUILD_VER}" --file .docker/Dockerfile .
+            docker build --build-arg "USER_NAME=circleci" --tag "kohirens/git-tool-belt:${BUILD_VER}" --file .docker/Dockerfile .
             docker login --username "${DH_USER}" --password "${DH_PASS}"
             docker push "kohirens/git-tool-belt:${BUILD_VER}"
-            docker compose -f .docker/docker-compose.yml build
 
 workflows:
   pull-request:
