@@ -37,16 +37,16 @@ func (af *applicationFlags) define() {
 	af.semver = &semverSubCmd{
 		fs: flag.NewFlagSet("semver", flag.ContinueOnError),
 	}
-	af.semver.fs.StringVar(&af.semver.repo, "repo", "", flagUsages["repo"])
+	af.semver.fs.StringVar(&af.semver.repo, "repo", "", usageMsgs["repo"])
 	af.semver.fs.StringVar(&af.semver.save, "save", "", usageMsgs["semver.save"])
 	// taggable sub-command
 	af.taggable = &taggableSubCmd{
 		fs: flag.NewFlagSet(taggable, flag.ExitOnError),
 	}
-	af.taggable.fs.StringVar(&af.taggable.commitRange, "commitRange", "", flagUsages["commitRange"])
-	af.taggable.fs.StringVar(&af.taggable.repo, "repo", "", flagUsages["repo"])
-	af.taggable.fs.BoolVar(&af.taggable.verbose, "v", false, usageMsgs["taggableVerbose"])
-	af.taggable.fs.BoolVar(&af.taggable.verbose, "verbose", false, usageMsgs["taggableVerbose"])
+	af.taggable.fs.StringVar(&af.taggable.commitRange, "commitRange", "", usageMsgs["commit.range"])
+	af.taggable.fs.StringVar(&af.taggable.repo, "repo", "", usageMsgs["repo"])
+	af.taggable.fs.BoolVar(&af.taggable.verbose, "v", false, usageMsgs["taggable.v"])
+	af.taggable.fs.BoolVar(&af.taggable.verbose, "verbose", false, usageMsgs["taggable.verbose"])
 }
 
 // check Verify that all flags are set appropriately.
