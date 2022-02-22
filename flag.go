@@ -23,6 +23,7 @@ type taggableSubCmd struct {
 type semverSubCmd struct {
 	fs   *flag.FlagSet
 	repo string
+	save string
 }
 
 const (
@@ -33,10 +34,11 @@ const (
 // define All application flags.
 func (af *applicationFlags) define() {
 	// semver sub-command
-	appFlags.semver = &semverSubCmd{
+	af.semver = &semverSubCmd{
 		fs: flag.NewFlagSet("semver", flag.ContinueOnError),
 	}
 	af.semver.fs.StringVar(&af.semver.repo, "repo", "", flagUsages["repo"])
+	af.semver.fs.StringVar(&af.semver.save, "save", "", usageMsgs["semver.save"])
 	// taggable sub-command
 	af.taggable = &taggableSubCmd{
 		fs: flag.NewFlagSet(taggable, flag.ExitOnError),

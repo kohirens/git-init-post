@@ -24,8 +24,8 @@ func TestVersionSubCmd(tester *testing.T) {
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
 			tmpRepo := setupARepository(test.repo, test.repo)
-			test.args = append(test.args, "-repo "+tmpRepo)
-
+			bvFile := tmpRepo + PS + buildVersionFile
+			test.args = append(test.args, "-repo "+tmpRepo, "-save "+bvFile)
 			cmd := getTestBinCmd(test.args)
 
 			cmdOut, cmdErr := cmd.CombinedOutput()
@@ -37,7 +37,6 @@ func TestVersionSubCmd(tester *testing.T) {
 
 			var bv buildVersion
 
-			bvFile := tmpRepo + PS + buildVersionFile
 			bvData, _ := os.ReadFile(bvFile)
 			if e := json.Unmarshal(bvData, &bv); e != nil {
 				t.Errorf("test failed trying to decode %v: %v", bvFile, e.Error())
@@ -108,7 +107,7 @@ func TestGetSemverInfo(tester *testing.T) {
 				tmpRepo = setupARepository(test.repo, test.repo)
 			}
 
-			err := GetSemverInfo(tmpRepo)
+			bvData, err := GetSemverInfo(tmpRepo)
 
 			if (err != nil) != test.shouldErr {
 				t.Errorf("error %v", err.Error())
@@ -119,10 +118,8 @@ func TestGetSemverInfo(tester *testing.T) {
 			}
 
 			var bv buildVersion
-			bvFile := tmpRepo + PS + buildVersionFile
-			bvData, _ := os.ReadFile(bvFile)
 			if e := json.Unmarshal(bvData, &bv); e != nil {
-				t.Errorf("test failed trying to decode %v: %v", bvFile, e.Error())
+				t.Errorf("test failed trying to decode %v: %v", bvData, e.Error())
 			}
 			if bv.CurrentVersion != test.version {
 				t.Errorf("unexpected version got %q, want %q", bv.CurrentVersion, test.version)
