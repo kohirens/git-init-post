@@ -60,7 +60,7 @@ jobs:
                 echo "cannot publish an image release tag file not found"
                 exit 1
             fi
-            export USER_NAME="app"
+            export USER_NAME="circleci"
             export REPO="github.com/kohirens/git-tool-belt"
             export BUILD_VER=$(cat "tagged.txt")
             echo "BUILD_VER=${BUILD_VER}"
