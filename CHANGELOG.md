@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="1.0.2"></a>
+## [1.0.2] - 2022-02-22
+### Fixed
+- Docker build permission error.
+
+
 <a name="1.0.1"></a>
 ## [1.0.1] - 2022-02-22
 ### Fixed
@@ -52,7 +58,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.0.1...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.0.2...HEAD
+[1.0.2]: https://github.com/kohirens/git-tool-belt/compare/1.0.1...1.0.2
 [1.0.1]: https://github.com/kohirens/git-tool-belt/compare/1.0.0...1.0.1
 [1.0.0]: https://github.com/kohirens/git-tool-belt/compare/0.9.0...1.0.0
 [0.9.0]: https://github.com/kohirens/git-tool-belt/compare/0.2.1...0.9.0
