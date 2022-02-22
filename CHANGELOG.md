@@ -2,8 +2,11 @@
 ## [Unreleased]
 
 
-<a name="0.9.1"></a>
-## [0.9.1] - 2022-02-20
+<a name="1.0.0"></a>
+## [1.0.0] - 2022-02-22
+### Changed
+- Build and publish docker image in CI.
+
 
 <a name="0.9.0"></a>
 ## [0.9.0] - 2022-02-20
@@ -43,8 +46,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/0.9.1...HEAD
-[0.9.1]: https://github.com/kohirens/git-tool-belt/compare/0.9.0...0.9.1
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.0.0...HEAD
+[1.0.0]: https://github.com/kohirens/git-tool-belt/compare/0.9.0...1.0.0
 [0.9.0]: https://github.com/kohirens/git-tool-belt/compare/0.2.1...0.9.0
 [0.2.1]: https://github.com/kohirens/git-tool-belt/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/kohirens/git-tool-belt/compare/0.1.0...0.2.0
