@@ -51,9 +51,6 @@ RUN addgroup --system --gid ${USER_GID} ${USER_GROUP} \
     --uid ${USER_UID} \
     ${USER_NAME}
 
-COPY .devcontainer/download-vs-code-server.sh .
-RUN chmod +x ./download-vs-code-server.sh && chown -R "${USER_NAME}:${USER_GROUP}" .
-
 USER ${USER_NAME}
 
 # Make directories with correct permissions
@@ -66,12 +63,6 @@ RUN go install github.com/git-chglog/git-chglog/cmd/git-chglog@v0.15.0 \
  && go clean -cache -modcache -testcache
 
 COPY .docker/start.sh /usr/local/bin/start.sh
-
-# Install VS Code Server and Requirements for pre-installing extensions
-RUN mv /go/download-vs-code-server.sh ./download-vs-code-server.sh \
- && ./download-vs-code-server.sh \
- && mkdir -p /home/${USER_NAME}/.vscode-server/extensions \
- && mkdir -p /home/${USER_NAME}/.vscode-server-insiders/extensions
 
 ENV PATH="/home/${USER_NAME}/bin:${PATH}"
 
