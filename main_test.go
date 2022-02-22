@@ -116,8 +116,6 @@ func showCmdOutput(cmdOut []byte, cmdErr error) {
 		return
 	}
 
-	fmt.Printf("args: %v\n", os.Args)
-
 	if cmdOut != nil {
 		fmt.Printf("\nBEGIN sub-command out:\n%v", string(cmdOut))
 		fmt.Print("END sub-command\n")

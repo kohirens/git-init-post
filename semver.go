@@ -30,15 +30,25 @@ func semverMain(af *applicationFlags) error {
 		repoPath = af.semver.repo
 	}
 
-	return GetSemverInfo(repoPath)
+	svInfo, err1 := GetSemverInfo(repoPath)
+	if err1 != nil {
+		return err1
+	}
+
+	if af.semver.save != "" {
+		// Write the info to a JSON file.
+		return saveSemverInfo(af.semver.save, svInfo)
+	}
+
+	return nil
 }
 
 // GetSemverInfo build a JSON file with semver info.
-func GetSemverInfo(repoPath string) error {
+func GetSemverInfo(repoPath string) ([]byte, error) {
 	// Check the path exist.
 	fileObj, err := os.Stat(repoPath)
 	if err != nil || !fileObj.IsDir() {
-		return fmt.Errorf("repository path does not exists: %v", repoPath)
+		return nil, fmt.Errorf("repository path does not exists: %v", repoPath)
 	}
 
 	bvInfo := new(buildVersion)
@@ -47,21 +57,23 @@ func GetSemverInfo(repoPath string) error {
 	// Add commit hash.
 	hash, err2 := getCommitHash(repoPath, bvInfo.CurrentVersion)
 	if err2 != nil {
-		return err2
+		return nil, err2
 	}
 	bvInfo.CommitHash = hash
 
 	bvJson, err1 := json.Marshal(bvInfo)
 	if err1 != nil {
-		return fmt.Errorf("could not JSON encode build version info, reason: %v", err1.Error())
+		return nil, fmt.Errorf("could not JSON encode build version info, reason: %v", err1.Error())
 	}
 
-	// Write the info to a JSON file.
-	bvFile := repoPath + PS + buildVersionFile
-	if e := os.WriteFile(bvFile, bvJson, dirMode); e != nil {
-		return fmt.Errorf("could not build %v, reason: %v", bvFile, e.Error())
-	}
+	return bvJson, nil
+}
 
+// saveSemverInfo Write the info to a file.
+func saveSemverInfo(filename string, info []byte) error {
+	if e := os.WriteFile(filename, info, dirMode); e != nil {
+		return fmt.Errorf("could not write file %q, reason: %v", filename, e.Error())
+	}
 	return nil
 }
 
