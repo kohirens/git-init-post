@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="1.0.6"></a>
+## [1.0.6] - 2022-02-22
+### Fixed
+- Docker build in CI.
+
+
 <a name="1.0.5"></a>
 ## [1.0.5] - 2022-02-22
 ### Fixed
@@ -76,7 +82,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.0.5...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.0.6...HEAD
+[1.0.6]: https://github.com/kohirens/git-tool-belt/compare/1.0.5...1.0.6
 [1.0.5]: https://github.com/kohirens/git-tool-belt/compare/1.0.4...1.0.5
 [1.0.4]: https://github.com/kohirens/git-tool-belt/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/kohirens/git-tool-belt/compare/1.0.2...1.0.3
