@@ -24,7 +24,7 @@ func TestVersionSubCmd(tester *testing.T) {
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
 			tmpRepo := setupARepository(test.repo, test.repo)
-			bvFile := tmpRepo + PS + buildVersionFile
+			bvFile := tmpRepo + PS + "build-version.json"
 			test.args = append(test.args, "-repo "+tmpRepo, "-save "+bvFile)
 			cmd := getTestBinCmd(test.args)
 

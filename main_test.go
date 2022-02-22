@@ -72,7 +72,7 @@ func runAppMain() {
 	os.Args = append([]string{os.Args[0]}, args...)
 
 	// Debug stmt
-	//fmt.Printf("\nos args = %v\n", os.Args)
+	//fmt.Printf("\nsub os.Args = %v\n", os.Args)
 
 	main()
 }
@@ -81,7 +81,7 @@ func runAppMain() {
 func getTestBinCmd(args []string) *exec.Cmd {
 	// call the generated test binary directly
 	// Have it the function runAppMain.
-	cmd := exec.Command(os.Args[0], "-args", strings.Join(args, " "))
+	cmd := exec.Command(os.Args[0])
 	// Run in the context of the source directory.
 	_, filename, _, _ := runtime.Caller(0)
 	cmd.Dir = path.Dir(filename)

@@ -14,8 +14,6 @@ import (
 	"strings"
 )
 
-const buildVersionFile = "build-version.json"
-
 type buildVersion struct {
 	CommitHash        string `json:"CommitHash"`
 	CurrentVersion    string `json:"currentVersion"`
