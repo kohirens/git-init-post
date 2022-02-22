@@ -60,12 +60,11 @@ RUN mkdir -p ~/bin
 RUN go install github.com/git-chglog/git-chglog/cmd/git-chglog@v0.15.0 \
  && go clean -cache -modcache -testcache
 
-
-COPY .devcontainer/download-vs-code-server.sh .
-COPY .docker/start.sh /usr/local/bin/start.sh
+COPY --chown=${USER_NAME}:${USER_GROUP} .devcontainer/download-vs-code-server.sh .
+COPY --chown=${USER_NAME}:${USER_GROUP} .docker/start.sh /usr/local/bin/start.sh
 
 # Install VS Code Server and Requirements for pre-installing extensions
-RUN ./download-vs-code-server.sh \
+RUN chmod +x ./download-vs-code-server.sh && ./download-vs-code-server.sh \
  && mkdir -p /home/${USER_NAME}/.vscode-server/extensions \
  && mkdir -p /home/${USER_NAME}/.vscode-server-insiders/extensions
 
