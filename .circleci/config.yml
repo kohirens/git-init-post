@@ -55,7 +55,7 @@ jobs:
       - run:
           name: "Build"
           command: |
-            ls -la .
+            which sh
             if [ ! -f ./tagged.txt ]; then
                 echo "cannot publish an image release tag file not found"
                 exit 1
