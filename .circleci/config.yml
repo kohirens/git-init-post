@@ -58,14 +58,79 @@ jobs:
           name: "Build"
           command: |
             if [ ! -f ./tagged.txt ]; then
-                echo "cannot publish an image release tag file not found"
+                echo "cannot publish a Docker image, release-tag file not found"
                 exit 1
             fi
             export BUILD_VER=$(cat "tagged.txt")
+            # need to get the correct commit
+            git fetch --all --tags
+            git checkout "tags/${BUILD_VER}" -b "publish-${BUILD_VER}"
+            git log -1
             echo "BUILD_VER=${BUILD_VER}"
             docker build --build-arg "USER_NAME=circleci" --tag "kohirens/git-tool-belt:${BUILD_VER}" --file .docker/Dockerfile .
             docker login --username "${DH_USER}" --password "${DH_PASS}"
             docker push "kohirens/git-tool-belt:${BUILD_VER}"
+
+  publish-execs:
+    docker:
+      - image: khalifahks/alpine-cci:0.4.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: "Build"
+          command: |
+            apk add go
+            echo "1.0.7" > tagged.txt
+            if [ ! -f ./tagged.txt ]; then
+                echo "cannot publish a Docker image, release-tag file not found"
+                exit 1
+            fi
+            export BUILD_VER=$(cat "tagged.txt")
+            # need to get the correct commit
+            git fetch --all --tags
+            git checkout "tags/${BUILD_VER}" -b "publish-${BUILD_VER}"
+            #!/usr/bin/env bash
+            set -e
+            package_name="git-tool-belt"
+            platforms=("windows/amd64" "windows/386" "linux/amd64" "linux/386")
+            declare -a releaseFiles=()
+            for platform in "${platforms[@]}"
+            do
+                platform_split=(${platform//\// })
+                GOOS=${platform_split[0]}
+                GOARCH=${platform_split[1]}
+                output_name="${package_name}-${GOOS}-${GOARCH}"
+                if [ "${GOOS}" = "windows" ]; then
+                    output_name="${output_name}.exe"
+                fi
+                echo "building ${output_name}"
+                env GOOS=$GOOS GOARCH=$GOARCH go build -o "${output_name}"
+                if [ $? -ne 0 ]; then
+                    echo 'An error has occurred! Aborting the script execution...'
+                    exit 1
+                fi
+                if [ "${GOOS}" = "windows" ]; then
+                    zip "${output_name}.zip" "${output_name}"
+                    releaseFiles+=("${output_name}.zip")
+                else
+                    tar -zcvf "${output_name}.tar.gz" "${output_name}"
+                    releaseFiles+=("${output_name}.tar.gz")
+                fi
+            done
+            if [ -z "${releaseFiles}" ]; then
+                echo "error no release files found to upload"
+                exit 1
+            fi
+            echo "releaseFiles=${releaseFiles}"
+            echo "${GH_TOKE}" > really-i-need-a-file.txt
+            gh auth login --with-token < really-i-need-a-file.txt
+            for releaseFile in "${releaseFiles[@]}"
+            do
+                echo "uploading \"${releaseFile}\""
+                gh release upload "${BUILD_VER}" "${releaseFile}" --clobber
+            done
 
 workflows:
   pull-request:
@@ -76,6 +141,9 @@ workflows:
               ignore: /main|updated-changelog-skip-ci/
       - run-test:
           requires: [ co ]
+      - publish-execs:
+          requires: [ co ]
+          context: orb-publishing
   # Only run when branch is main
   # 1. Update the changelog.
   # 2. Merge the changelog to main, causing tag-and-release to run.
@@ -95,5 +163,8 @@ workflows:
           context: orb-publishing
           pre-steps: [ checkout, attach_workspace: { at: '.' } ]
       - publish-image:
+          requires: [ vro/tag-and-release ]
+          context: orb-publishing
+      - publish-execs:
           requires: [ vro/tag-and-release ]
           context: orb-publishing
