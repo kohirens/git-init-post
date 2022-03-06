@@ -90,7 +90,9 @@ jobs:
             # need to get the correct commit
             git fetch --all --tags
             git checkout "tags/${BUILD_VER}" -b "publish-${BUILD_VER}"
-            go install && go generate
+            go install
+            export PATH="${PATH}:/root/go/bin"
+            go generate
             #!/usr/bin/env bash
             set -e
             package_name="git-tool-belt"
