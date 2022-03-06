@@ -82,7 +82,6 @@ jobs:
           name: "Build"
           command: |
             apk add go
-            echo "1.0.7" > tagged.txt
             if [ ! -f ./tagged.txt ]; then
                 echo "cannot publish a Docker image, release-tag file not found"
                 exit 1
