@@ -86,7 +86,10 @@ RUN chown -R "${USER_NAME}:${USER_GROUP}" .
 
 USER ${USER_NAME}
 
-RUN go build && go install
+RUN go install \
+ && go generate \
+ && go build \
+ && go install
 
 FROM alpine:3.15 AS release
 

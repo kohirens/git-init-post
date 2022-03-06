@@ -91,6 +91,7 @@ jobs:
             # need to get the correct commit
             git fetch --all --tags
             git checkout "tags/${BUILD_VER}" -b "publish-${BUILD_VER}"
+            go install && go generate
             #!/usr/bin/env bash
             set -e
             package_name="git-tool-belt"
@@ -129,7 +130,7 @@ jobs:
             for releaseFile in "${releaseFiles[@]}"
             do
                 echo "uploading \"${releaseFile}\""
-                gh release upload "${BUILD_VER}" "${releaseFile}" --clobber
+                gh release upload "${BUILD_VER}" "${releaseFile}"
             done
 
 workflows:
@@ -141,9 +142,6 @@ workflows:
               ignore: /main|updated-changelog-skip-ci/
       - run-test:
           requires: [ co ]
-      - publish-execs:
-          requires: [ co ]
-          context: orb-publishing
   # Only run when branch is main
   # 1. Update the changelog.
   # 2. Merge the changelog to main, causing tag-and-release to run.

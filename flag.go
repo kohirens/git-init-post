@@ -1,16 +1,22 @@
 package main
 
+//go:generate git-tool-belt semver -save info.go -format go -packageName main
+
 import (
 	"flag"
 	"fmt"
+	"os"
 	"regexp"
 )
 
 type applicationFlags struct {
 	args     []string
+	help     bool
 	subCmd   string
 	semver   *semverSubCmd
 	taggable *taggableSubCmd
+	version  bool
+	semVer   string
 }
 
 type taggableSubCmd struct {
@@ -21,9 +27,11 @@ type taggableSubCmd struct {
 }
 
 type semverSubCmd struct {
-	fs   *flag.FlagSet
-	repo string
-	save string
+	format      string
+	fs          *flag.FlagSet
+	packageName string
+	repo        string
+	save        string
 }
 
 const (
@@ -33,24 +41,41 @@ const (
 
 // define All application flags.
 func (af *applicationFlags) define() {
+	flag.BoolVar(&af.help, "h", false, "")
+	flag.BoolVar(&af.help, "help", false, usageMsgs["help"])
+	flag.BoolVar(&af.version, "v", false, "")
+	flag.BoolVar(&af.version, "version", false, usageMsgs["version"])
 	// semver sub-command
 	af.semver = &semverSubCmd{
 		fs: flag.NewFlagSet("semver", flag.ContinueOnError),
 	}
 	af.semver.fs.StringVar(&af.semver.repo, "repo", "", usageMsgs["repo"])
 	af.semver.fs.StringVar(&af.semver.save, "save", "", usageMsgs["semver.save"])
+	af.semver.fs.StringVar(&af.semver.packageName, "packageName", "", usageMsgs["semver.packageName"])
+	af.semver.fs.StringVar(&af.semver.format, "format", "JSON", usageMsgs["semver.format"])
 	// taggable sub-command
 	af.taggable = &taggableSubCmd{
 		fs: flag.NewFlagSet(taggable, flag.ExitOnError),
 	}
 	af.taggable.fs.StringVar(&af.taggable.commitRange, "commitRange", "", usageMsgs["commit.range"])
 	af.taggable.fs.StringVar(&af.taggable.repo, "repo", "", usageMsgs["repo"])
-	af.taggable.fs.BoolVar(&af.taggable.verbose, "v", false, usageMsgs["taggable.v"])
+	af.taggable.fs.BoolVar(&af.taggable.verbose, "v", false, "")
 	af.taggable.fs.BoolVar(&af.taggable.verbose, "verbose", false, usageMsgs["taggable.verbose"])
 }
 
 // check Verify that all flags are set appropriately.
 func (af *applicationFlags) check() error {
+	if appFlags.help {
+		flag.PrintDefaults()
+		fmt.Printf(usageMsgs["subCommands"])
+		os.Exit(0)
+	}
+
+	if appFlags.version {
+		fmt.Printf("%v\n", af.semVer)
+		os.Exit(0)
+	}
+
 	if len(af.args) == 0 {
 		return fmt.Errorf(errors.subCmdMissing)
 	}
@@ -60,6 +85,15 @@ func (af *applicationFlags) check() error {
 		res := rangeFmt.FindStringSubmatch(af.taggable.commitRange)
 		if af.taggable.commitRange != "HEAD" && af.taggable.commitRange != "" && res == nil {
 			return fmt.Errorf(errors.invalidCommitRange)
+		}
+	}
+
+	if af.subCmd == cSemver {
+		if af.semver.format != "go" && af.semver.format != "JSON" {
+			return fmt.Errorf(errors.semverFormtatInvalid)
+		}
+		if af.semver.format == "go" && af.semver.packageName == "" {
+			return fmt.Errorf(errors.packageNameRequired)
 		}
 	}
 

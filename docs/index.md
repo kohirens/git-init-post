@@ -49,3 +49,21 @@ function will append ".bundle" to the first parameter to find the actual bundle.
 ```shell
 $Env:BUILD_VER="0.9.0" ; $Env:BTARGET="release" ; docker compose -f .docker/docker-compose.yml build
 ```
+
+## Build for Release
+
+In order to provide the correct executable for delivery, you MUST run the
+Go `generate` command before running `build`. It will generate files that
+provide the version information output when the `-version` flag is called for
+the distributed application. So a proper build looks like:
+
+Current build process:
+
+```shell
+go install
+go generate
+go build
+```
+
+Where `go install` command will allow the generate command to generate the
+`info.go` file that will be included in the `build` command.

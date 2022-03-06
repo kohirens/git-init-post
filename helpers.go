@@ -7,6 +7,20 @@ import (
 	"regexp"
 )
 
+type byteBuf struct {
+	Buf []byte
+}
+
+func (bb *byteBuf) Write(b []byte) (n int, err error) {
+	if bb.Buf == nil {
+		bb.Buf = []byte{}
+	}
+
+	bb.Buf = append(bb.Buf, b...)
+
+	return len(b), err
+}
+
 // getLatestChanges Get changes since the specified tag.
 func getLatestChanges(repoPath, commitRange string) ([]byte, error) {
 	revRange := "-1" // Default to last commit.

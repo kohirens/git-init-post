@@ -117,18 +117,14 @@ func TestGetSemverInfo(tester *testing.T) {
 				return
 			}
 
-			var bv buildVersion
-			if e := json.Unmarshal(bvData, &bv); e != nil {
-				t.Errorf("test failed trying to decode %v: %v", bvData, e.Error())
+			if bvData.CurrentVersion != test.version {
+				t.Errorf("unexpected version got %q, want %q", bvData.CurrentVersion, test.version)
 			}
-			if bv.CurrentVersion != test.version {
-				t.Errorf("unexpected version got %q, want %q", bv.CurrentVersion, test.version)
+			if bvData.CommitHash != test.hash {
+				t.Errorf("unexpected commit hash got %q, want %q", bvData.CommitHash, test.hash)
 			}
-			if bv.CommitHash != test.hash {
-				t.Errorf("unexpected commit hash got %q, want %q", bv.CommitHash, test.hash)
-			}
-			if bv.NextVersion != test.nextVersion {
-				t.Errorf("unexpected next version got %q, want %q", bv.NextVersion, test.nextVersion)
+			if bvData.NextVersion != test.nextVersion {
+				t.Errorf("unexpected next version got %q, want %q", bvData.NextVersion, test.nextVersion)
 			}
 		})
 	}

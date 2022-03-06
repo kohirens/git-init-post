@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"os"
 	"regexp"
 	"strconv"
@@ -33,16 +34,34 @@ func semverMain(af *applicationFlags) error {
 		return err1
 	}
 
+	var svBytes []byte
+	if af.semver.format == "go" {
+		fmt.Println("generating go code")
+		var err2 error
+		svBytes, err2 = formatForGo(svInfo, af.semver.packageName)
+		if err2 != nil {
+			return err2
+		}
+	} else {
+		var err3 error
+		svBytes, err3 = json.Marshal(svInfo)
+		if err3 != nil {
+			return fmt.Errorf("could not JSON encode build version info, reason: %v", err3.Error())
+		}
+	}
+
 	if af.semver.save != "" {
 		// Write the info to a JSON file.
-		return saveSemverInfo(af.semver.save, svInfo)
+		return saveSemverInfo(af.semver.save, svBytes)
+	} else {
+		fmt.Printf("%s", svBytes)
 	}
 
 	return nil
 }
 
 // GetSemverInfo build a JSON file with semver info.
-func GetSemverInfo(repoPath string) ([]byte, error) {
+func GetSemverInfo(repoPath string) (*buildVersion, error) {
 	// Check the path exist.
 	fileObj, err := os.Stat(repoPath)
 	if err != nil || !fileObj.IsDir() {
@@ -59,12 +78,32 @@ func GetSemverInfo(repoPath string) ([]byte, error) {
 	}
 	bvInfo.CommitHash = hash
 
-	bvJson, err1 := json.Marshal(bvInfo)
+	return bvInfo, nil
+}
+
+// FormatForGo Convert the JSON into Go code.
+func formatForGo(svInfo *buildVersion, pn string) ([]byte, error) {
+	svData := &byteBuf{}
+
+	tmpl, err1 := template.New("sv").Parse("package {{ .PackageName }}\n\n// Code generated .* DO NOT EDIT.\n\nfunc init() {\n\tappFlags.semVer = \"{{ .NextVersion }}\"\n}\n")
+
 	if err1 != nil {
-		return nil, fmt.Errorf("could not JSON encode build version info, reason: %v", err1.Error())
+		return nil, err1
 	}
 
-	return bvJson, nil
+	fmt.Printf("generating code for package %v\n", pn)
+
+	placeholders := struct {
+		PackageName, NextVersion string
+	}{
+		pn, svInfo.NextVersion,
+	}
+
+	if e := tmpl.ExecuteTemplate(svData, "sv", placeholders); e != nil {
+		return nil, e
+	}
+
+	return svData.Buf, nil
 }
 
 // saveSemverInfo Write the info to a file.
@@ -172,7 +211,7 @@ func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 		ver[2] = "0"
 
 	} else { // Increment patch number
-		ver[2], nextVer, nextVerReason = incrementNumber(ver[2], nextVer, "no new features or breaking changed detected in the git logs")
+		ver[2], nextVer, nextVerReason = incrementNumber(ver[2], nextVer, "no new features or breaking change detected in the git logs")
 	}
 	nextVer = strings.Join(ver, ".")
 
