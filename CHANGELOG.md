@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="1.1.0"></a>
+## [1.1.0] - 2022-03-06
+### Changed
+- Publish binaries.
+
+
 <a name="1.0.7"></a>
 ## [1.0.7] - 2022-02-22
 ### Removed
@@ -88,7 +94,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.0.7...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/kohirens/git-tool-belt/compare/1.0.7...1.1.0
 [1.0.7]: https://github.com/kohirens/git-tool-belt/compare/1.0.6...1.0.7
 [1.0.6]: https://github.com/kohirens/git-tool-belt/compare/1.0.5...1.0.6
 [1.0.5]: https://github.com/kohirens/git-tool-belt/compare/1.0.4...1.0.5
