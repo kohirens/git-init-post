@@ -4,7 +4,7 @@
 
 ## Sub Command "semver"
 
-Generate a file `build-version.json` containing current and next tag info based on special tags in the commit messages.
+Generate a current and next tag info based on special tags in the commit messages.
 Currently, special tags refer to commit message which begin with a tag of:
 
 | Tag             | Description                                                                    |
@@ -18,11 +18,11 @@ Currently, special tags refer to commit message which begin with a tag of:
 
 ### Examples
 
-`git-tool-belt version`
+`git-tool-belt semver`
 
 or
 
-`git-tool-belt version -repo my/git/repo`
+`git-tool-belt semver -repo my/git/repo`
 
 **Use Cases**
 
