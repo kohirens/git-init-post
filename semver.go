@@ -184,7 +184,7 @@ func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 		return
 	}
 
-	re := regexp.MustCompile(`rel:\s(\d+\.\d+\.\d+)`)
+	re := regexp.MustCompile(`rel:\s*(\d+\.\d+\.\d+)`)
 	res := re.FindStringSubmatch(commitLogs)
 	// Look for commit message format "rel: x.x.x"
 	if len(res) > 0 {
