@@ -6,12 +6,8 @@
     * `go fmt` - to format the project
     * `git-chglog --output CHANGELOG.md` - to update the changelog
     * then append the changes then commit.
-* Build Linux executable and upload to Github.
 
 ## Feature Level
-
-* Figure out how clients can add a way to include the command to generate
-  build version info to their `go builds`.
 
 * Generate a pre commit git hook to perform the following:
   * `git-chglog --output CHANGELOG.md` - should it produce output, then fail to
