@@ -12,4 +12,5 @@ var usageMsgs = map[string]string{
 	"subCommands":        "\n  sub-commands:\n\n    semver\n\tsee semver --help\n    taggable\n\tsee taggable --help\n",
 	"semver.packageName": "The package name to use for the Go code generated, this option is only used when \"--format go\"",
 	"semver.format":      "The format of the semantic version output; options are \"JSON\" or \"go\"",
+	"semver.varName":     "Variable name to use in generated code, default to \"appFlags\"",
 }
