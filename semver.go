@@ -85,7 +85,15 @@ func GetSemverInfo(repoPath string) (*buildVersion, error) {
 func formatForGo(svInfo *buildVersion, pn string) ([]byte, error) {
 	svData := &byteBuf{}
 
-	tmpl, err1 := template.New("sv").Parse("package {{ .PackageName }}\n\n// Code generated .* DO NOT EDIT.\n\nfunc init() {\n\tappFlags.semVer = \"{{ .NextVersion }}\"\n}\n")
+	tmplStr := `package {{ .PackageName }}
+// Code generated .* DO NOT EDIT.
+func init() {
+	// Predefine this struct in your code with the following members of type string.
+	{{ .VarName }}.CommitHash = "{{ .CommitHash }}"
+	{{ .VarName }}.CurrentVersion = "{{ .CurrentVersion }}"
+}
+`
+	tmpl, err1 := template.New("sv").Parse(tmplStr)
 
 	if err1 != nil {
 		return nil, err1
@@ -94,9 +102,9 @@ func formatForGo(svInfo *buildVersion, pn string) ([]byte, error) {
 	fmt.Printf("generating code for package %v\n", pn)
 
 	placeholders := struct {
-		PackageName, NextVersion string
+		CommitHash, CurrentVersion, PackageName, VarName string
 	}{
-		pn, svInfo.NextVersion,
+		svInfo.CommitHash, svInfo.CurrentVersion, pn, "appFlags",
 	}
 
 	if e := tmpl.ExecuteTemplate(svData, "sv", placeholders); e != nil {

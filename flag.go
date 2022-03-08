@@ -1,6 +1,6 @@
 package main
 
-//go:generate git-tool-belt semver -save info.go -format go -packageName main
+//go:generate git-tool-belt semver -save info.go -format go -packageName main -varName appConfig
 
 import (
 	"flag"
@@ -10,13 +10,14 @@ import (
 )
 
 type applicationFlags struct {
-	args     []string
-	help     bool
-	subCmd   string
-	semver   *semverSubCmd
-	taggable *taggableSubCmd
-	version  bool
-	semVer   string
+	args           []string
+	help           bool
+	subCmd         string
+	semver         *semverSubCmd
+	taggable       *taggableSubCmd
+	version        bool
+	CurrentVersion string
+	CommitHash     string
 }
 
 type taggableSubCmd struct {
@@ -32,6 +33,7 @@ type semverSubCmd struct {
 	packageName string
 	repo        string
 	save        string
+	varName     string
 }
 
 const (
@@ -53,6 +55,7 @@ func (af *applicationFlags) define() {
 	af.semver.fs.StringVar(&af.semver.save, "save", "", usageMsgs["semver.save"])
 	af.semver.fs.StringVar(&af.semver.packageName, "packageName", "", usageMsgs["semver.packageName"])
 	af.semver.fs.StringVar(&af.semver.format, "format", "JSON", usageMsgs["semver.format"])
+	af.semver.fs.StringVar(&af.semver.varName, "varName", "appFlags", usageMsgs["semver.varName"])
 	// taggable sub-command
 	af.taggable = &taggableSubCmd{
 		fs: flag.NewFlagSet(taggable, flag.ExitOnError),
@@ -72,7 +75,7 @@ func (af *applicationFlags) check() error {
 	}
 
 	if appFlags.version {
-		fmt.Printf("%v\n", af.semVer)
+		fmt.Printf("%v, %v\n", af.CurrentVersion, af.CommitHash)
 		os.Exit(0)
 	}
 
