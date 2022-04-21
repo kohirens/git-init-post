@@ -53,4 +53,11 @@ func main() {
 		fmt.Printf("%v", IsTaggable(appFlags))
 		return
 	}
+
+	if appFlags.subCmd == cCheckConfSubCmd {
+		if e := addMissingChgLogConfig(appFlags.checkConfSubCmd.path, appFlags.checkConfSubCmd.repo); e != nil {
+			mainErr = e
+			return
+		}
+	}
 }
