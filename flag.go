@@ -10,21 +10,21 @@ import (
 )
 
 type applicationFlags struct {
-	args           []string
-	help           bool
-	subCmd         string
-	semver         *semverSubCmd
-	taggable       *taggableSubCmd
-	version        bool
-	CurrentVersion string
-	CommitHash     string
+	args            []string
+	help            bool
+	subCmd          string
+	semver          *semverSubCmd
+	taggable        *taggableSubCmd
+	checkConfSubCmd *checkConfSubCmd
+	version         bool
+	CurrentVersion  string
+	CommitHash      string
 }
 
-type taggableSubCmd struct {
-	fs          *flag.FlagSet
-	commitRange string
-	repo        string
-	verbose     bool
+type checkConfSubCmd struct {
+	fs   *flag.FlagSet
+	path string
+	repo string
 }
 
 type semverSubCmd struct {
@@ -36,9 +36,17 @@ type semverSubCmd struct {
 	varName     string
 }
 
+type taggableSubCmd struct {
+	fs          *flag.FlagSet
+	commitRange string
+	repo        string
+	verbose     bool
+}
+
 const (
-	taggable = "taggable"
-	cSemver  = "semver"
+	cCheckConfSubCmd = "checkConf"
+	cSemver          = "semver"
+	taggable         = "taggable"
 )
 
 // define All application flags.
@@ -47,6 +55,12 @@ func (af *applicationFlags) define() {
 	flag.BoolVar(&af.help, "help", false, usageMsgs["help"])
 	flag.BoolVar(&af.version, "v", false, "")
 	flag.BoolVar(&af.version, "version", false, usageMsgs["version"])
+	// checkConfSubCmd sub-command
+	af.checkConfSubCmd = &checkConfSubCmd{
+		fs: flag.NewFlagSet(cCheckConfSubCmd, flag.ExitOnError),
+	}
+	af.checkConfSubCmd.fs.StringVar(&af.checkConfSubCmd.path, "path", ".chglog/config.yml", usageMsgs["checkConf.path"])
+	af.checkConfSubCmd.fs.StringVar(&af.checkConfSubCmd.repo, "repo", "", usageMsgs["checkConf.repo"])
 	// semver sub-command
 	af.semver = &semverSubCmd{
 		fs: flag.NewFlagSet("semver", flag.ContinueOnError),
@@ -93,10 +107,16 @@ func (af *applicationFlags) check() error {
 
 	if af.subCmd == cSemver {
 		if af.semver.format != "go" && af.semver.format != "JSON" {
-			return fmt.Errorf(errors.semverFormtatInvalid)
+			return fmt.Errorf(errors.semverFormatInvalid)
 		}
 		if af.semver.format == "go" && af.semver.packageName == "" {
 			return fmt.Errorf(errors.packageNameRequired)
+		}
+	}
+
+	if af.subCmd == cCheckConfSubCmd {
+		if af.checkConfSubCmd.path == "" {
+			return fmt.Errorf(errors.noConfPath)
 		}
 	}
 
