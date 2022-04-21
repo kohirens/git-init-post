@@ -138,6 +138,9 @@ func (af *applicationFlags) parseSubcommands() error {
 	}
 
 	switch af.args[0] {
+	case cCheckConfSubCmd:
+		af.subCmd = cCheckConfSubCmd
+		return af.semver.fs.Parse(af.args[1:])
 	case cSemver:
 		af.subCmd = cSemver
 		return af.semver.fs.Parse(af.args[1:])
