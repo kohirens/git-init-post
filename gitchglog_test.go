@@ -29,3 +29,24 @@ func TestAddMissingChgLogConfig(tester *testing.T) {
 		})
 	}
 }
+
+func TestConvertGitToHttp(tester *testing.T) {
+	var testCases = []struct {
+		name   string
+		gitUrl string
+		want   string
+	}{
+		{"noConf", "git@github.com/example/app.git", "https://github.com/example/app.git"},
+		{"noConfHttps", "https://github.com/example/app", "https://github.com/example/app"},
+	}
+
+	for _, tc := range testCases {
+		tester.Run(tc.name, func(t *testing.T) {
+			got := convertGitToHttp(tc.gitUrl)
+
+			if got != tc.want {
+				t.Errorf("got %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
