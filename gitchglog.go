@@ -30,7 +30,8 @@ func addMissingChgLogConfig(conf, gitUrl string) error {
 		return fmt.Errorf("clould not make dir %q", confDir)
 	}
 
-	outStr := strings.Replace(gitChgLogConf, "${VCS_URL}", "'"+gitUrl+"'", 1)
+	url := convertGitToHttp(gitUrl)
+	outStr := strings.Replace(gitChgLogConf, "${VCS_URL}", "'"+url+"'", 1)
 
 	if e := ioutil.WriteFile(conf, []byte(outStr), dirMode); e != nil {
 		return e
@@ -48,4 +49,13 @@ func addMissingChgLogConfig(conf, gitUrl string) error {
 	infof("found git-chglog config here %q\n", conf)
 
 	return nil
+}
+
+func convertGitToHttp(url string) string {
+
+	if strings.HasPrefix(url, "git@") {
+		url = strings.Replace(url, ":", "/", 1)
+		url = strings.Replace(url, "git@", "https://", 1)
+	}
+	return url
 }
