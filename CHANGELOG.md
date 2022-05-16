@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="1.2.8"></a>
+## [1.2.8] - 2022-05-16
+### Removed
+- Incorrect flag on code generator.
+
+
 <a name="1.2.7"></a>
 ## [1.2.7] - 2022-05-16
 ### Fixed
@@ -149,7 +155,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.2.7...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.2.8...HEAD
+[1.2.8]: https://github.com/kohirens/git-tool-belt/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/kohirens/git-tool-belt/compare/1.2.6...1.2.7
 [1.2.6]: https://github.com/kohirens/git-tool-belt/compare/1.2.5...1.2.6
 [1.2.5]: https://github.com/kohirens/git-tool-belt/compare/1.2.4...1.2.5
