@@ -1,4 +1,6 @@
-# Kohirens Git Tool Belt
+# Kohirens: Release  Tools
+
+A collection of tools to help you release software.
 
 ## Features
 
