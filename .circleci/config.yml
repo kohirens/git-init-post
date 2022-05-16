@@ -17,7 +17,7 @@ jobs:
   co:
     working_directory: ~/repo
     docker:
-      - image: circleci/golang:1.17
+      - image: cimg/go:1.17
     steps:
       - checkout
       - restore_cache:
@@ -36,7 +36,7 @@ jobs:
 
   run-test:
     docker:
-      - image: circleci/golang:1.17
+      - image: cimg/go:1.17
     steps:
       - attach_workspace:
           at: .
@@ -50,7 +50,7 @@ jobs:
 
   publish-image:
     docker:
-      - image: circleci/golang:1.17
+      - image: cimg/go:1.17
     steps:
       - setup_remote_docker:
           version: 20.10.11
