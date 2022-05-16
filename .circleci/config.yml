@@ -84,7 +84,7 @@ jobs:
           command: |
             echo "Publishing tag '<< pipeline.git.tag >>'"
             export BUILD_VER="<< pipeline.git.tag >>"
-            if [ ! -f ./tagged.txt ]; then
+            if [ -z "${BUILD_VER}" ]; then
                 echo "cannot publish executables, release tag was empty"
                 exit 1
             fi
@@ -144,7 +144,7 @@ workflows:
       - co:
           filters:
             branches:
-              ignore: /main|updated-changelog-skip-ci/
+              ignore: /main|auto-update-changelog/
       - run-test:
           requires: [ co ]
 
