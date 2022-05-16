@@ -38,7 +38,7 @@ func semverMain(af *applicationFlags) error {
 	if af.semver.format == "go" {
 		fmt.Println("generating go code")
 		var err2 error
-		svBytes, err2 = formatForGo(svInfo, af.semver.packageName)
+		svBytes, err2 = formatForGo(svInfo, af.semver.packageName, af.semver.varName)
 		if err2 != nil {
 			return err2
 		}
@@ -82,7 +82,7 @@ func GetSemverInfo(repoPath string) (*buildVersion, error) {
 }
 
 // FormatForGo Convert the JSON into Go code.
-func formatForGo(svInfo *buildVersion, pn string) ([]byte, error) {
+func formatForGo(svInfo *buildVersion, pn, vn string) ([]byte, error) {
 	svData := &byteBuf{}
 
 	tmplStr := `package {{ .PackageName }}
@@ -102,9 +102,9 @@ func init() {
 	fmt.Printf("generating code for package %v\n", pn)
 
 	placeholders := struct {
-		CommitHash, CurrentVersion, PackageName, VarName string
+		CommitHash, FCurrentVersion, PackageName, VarName string
 	}{
-		svInfo.CommitHash, svInfo.CurrentVersion, pn, "appFlags",
+		svInfo.CommitHash, svInfo.CurrentVersion, pn, vn,
 	}
 
 	if e := tmpl.ExecuteTemplate(svData, "sv", placeholders); e != nil {
