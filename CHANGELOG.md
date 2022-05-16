@@ -2,6 +2,16 @@
 ## [Unreleased]
 
 
+<a name="1.2.4"></a>
+## [1.2.4] - 2022-05-16
+### Changed
+- Use Kohirens circleci-go image to publish executables.
+
+### Fixed
+- Auto-publish, upgraded to unreleased Version Release Orb.
+- varName flag not passed in for semver subcommand.
+
+
 <a name="1.2.3"></a>
 ## [1.2.3] - 2022-04-22
 
@@ -121,7 +131,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.2.3...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.2.4...HEAD
+[1.2.4]: https://github.com/kohirens/git-tool-belt/compare/1.2.3...1.2.4
 [1.2.3]: https://github.com/kohirens/git-tool-belt/compare/1.2.2...1.2.3
 [1.2.2]: https://github.com/kohirens/git-tool-belt/compare/1.2.1...1.2.2
 [1.2.1]: https://github.com/kohirens/git-tool-belt/compare/1.2.0...1.2.1
