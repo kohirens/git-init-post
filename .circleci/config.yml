@@ -61,19 +61,16 @@ jobs:
       - run:
           name: "Build"
           command: |
-            if [ ! -f ./tagged.txt ]; then
-                echo "cannot publish a Docker image, release-tag file not found"
+            echo "Publishing tag '<< pipeline.git.tag >>'"
+            export BUILD_VER="<< pipeline.git.tag >>"
+            if [ -z "${BUILD_VER}" ]; then
+                echo "cannot publish a Docker image, release tag was empty"
                 exit 1
             fi
-            export BUILD_VER=$(cat "tagged.txt")
-            # need to get the correct commit
-            git fetch --all --tags
-            git checkout "tags/${BUILD_VER}" -b "publish-${BUILD_VER}"
-            git log -1
-            echo "BUILD_VER=${BUILD_VER}"
             docker build --build-arg "USER_NAME=circleci" --tag "kohirens/git-tool-belt:${BUILD_VER}" --file .docker/Dockerfile .
             docker login --username "${DH_USER}" --password "${DH_PASS}"
             docker push "kohirens/git-tool-belt:${BUILD_VER}"
+            docker rmi "kohirens/git-tool-belt:${BUILD_VER}"
 
   publish-execs:
     docker:
@@ -85,15 +82,12 @@ jobs:
       - run:
           name: "Build"
           command: |
-            apk add go
+            echo "Publishing tag '<< pipeline.git.tag >>'"
+            export BUILD_VER="<< pipeline.git.tag >>"
             if [ ! -f ./tagged.txt ]; then
-                echo "cannot publish a Docker image, release-tag file not found"
+                echo "cannot publish executables, release tag was empty"
                 exit 1
             fi
-            export BUILD_VER=$(cat "tagged.txt")
-            # need to get the correct commit
-            git fetch --all --tags
-            git checkout "tags/${BUILD_VER}" -b "publish-${BUILD_VER}"
             go install
             export PATH="${PATH}:/root/go/bin"
             go generate
