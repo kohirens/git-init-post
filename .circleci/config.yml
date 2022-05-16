@@ -1,13 +1,17 @@
 version: 2.1
 
 orbs:
-  vro: kohirens/version-release@0.8.0
+  vro: kohirens/version-release@dev:alpha
 
 parameters:
-  ssh-finger:
+  ssh_finger:
     description: SSH fingerprint.
     type: string
     default: "73:9b:43:f6:57:91:be:f6:0f:a4:c1:05:40:37:ab:79"
+  triggered_by_bot:
+    description: Trigger publishing a release tag workflow.
+    type: boolean
+    default: false
 
 jobs:
   co:
@@ -134,6 +138,12 @@ jobs:
                 gh release upload "${BUILD_VER}" "${releaseFile}"
             done
 
+filter-semantic-tag: &filter-semantic-tag
+  tags:
+    only: /^v?\d+\.\d+\.\d+$/
+  branches:
+    ignore: /.*/
+
 workflows:
   pull-request:
     jobs:
@@ -143,27 +153,33 @@ workflows:
               ignore: /main|updated-changelog-skip-ci/
       - run-test:
           requires: [ co ]
-  # Only run when branch is main
-  # 1. Update the changelog.
-  # 2. Merge the changelog to main, causing tag-and-release to run.
-  # 3. Verify there are taggable changes.
-  # 4. Publish a release tag.
-  auto-release:
+
+  publish-changelog:
+    when:
+      and:
+        - equal: [main, << pipeline.git.branch >>]
+        - equal: [webhook, << pipeline.trigger_source >>]
     jobs:
-      - vro/update-and-merge-changelog: #publish-changelog
+      - vro/publish-changelog:
+          context: orb-publishing
+          ssh_finger: << pipeline.parameters.ssh_finger >>
+
+  publish-release-tag:
+    when:
+      and:
+        - equal: [main, << pipeline.git.branch >>]
+        - << pipeline.parameters.triggered_by_bot >>
+    jobs:
+      - vro/tag-and-release:
+          context: orb-publishing
+
+  on-tag-release:
+    jobs:
+      - publish-image:
           context: orb-publishing
           filters:
-            branches:
-              only: main
-          pre-steps: [ checkout, attach_workspace: { at: '.' } ]
-          sshFinger: << pipeline.parameters.ssh-finger >>
-      - vro/tag-and-release:
-          requires: [ vro/update-and-merge-changelog ]
-          context: orb-publishing
-          pre-steps: [ checkout, attach_workspace: { at: '.' } ]
-      - publish-image:
-          requires: [ vro/tag-and-release ]
-          context: orb-publishing
+            <<: *filter-semantic-tag
       - publish-execs:
-          requires: [ vro/tag-and-release ]
           context: orb-publishing
+          filters:
+            <<: *filter-semantic-tag
