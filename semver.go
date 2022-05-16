@@ -102,7 +102,7 @@ func init() {
 	fmt.Printf("generating code for package %v\n", pn)
 
 	placeholders := struct {
-		CommitHash, FCurrentVersion, PackageName, VarName string
+		CommitHash, CurrentVersion, PackageName, VarName string
 	}{
 		svInfo.CommitHash, svInfo.CurrentVersion, pn, vn,
 	}
