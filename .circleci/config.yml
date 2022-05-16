@@ -73,7 +73,7 @@ jobs:
 
   publish-execs:
     docker:
-      - image: khalifahks/alpine-cci:0.4.0
+      - image: kohirens/circleci-go:0.2.1
     steps:
       - checkout
       - attach_workspace:
