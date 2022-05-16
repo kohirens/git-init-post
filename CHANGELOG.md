@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="1.2.9"></a>
+## [1.2.9] - 2022-05-16
+### Fixed
+- Building Executables.
+
+
 <a name="1.2.8"></a>
 ## [1.2.8] - 2022-05-16
 ### Removed
@@ -155,7 +161,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.2.8...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.2.9...HEAD
+[1.2.9]: https://github.com/kohirens/git-tool-belt/compare/1.2.8...1.2.9
 [1.2.8]: https://github.com/kohirens/git-tool-belt/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/kohirens/git-tool-belt/compare/1.2.6...1.2.7
 [1.2.6]: https://github.com/kohirens/git-tool-belt/compare/1.2.5...1.2.6
