@@ -81,7 +81,7 @@ func (af *applicationFlags) define() {
 }
 
 // check Verify that all flags are set appropriately.
-func (af *applicationFlags) check() error {
+func (af *applicationFlags) validate() error {
 	if appFlags.help {
 		flag.PrintDefaults()
 		fmt.Printf(usageMsgs["subCommands"])
