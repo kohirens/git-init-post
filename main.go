@@ -38,7 +38,7 @@ func main() {
 		return
 	}
 
-	if e := appFlags.check(); e != nil {
+	if e := appFlags.validate(); e != nil {
 		mainErr = e
 		return
 	}
