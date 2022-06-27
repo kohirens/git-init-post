@@ -44,7 +44,7 @@ type taggableSubCmd struct {
 }
 
 const (
-	cCheckConfSubCmd = "checkConf"
+	cCheckConfSubCmd = "checkconf"
 	cSemver          = "semver"
 	taggable         = "taggable"
 )
@@ -55,7 +55,7 @@ func (af *applicationFlags) define() {
 	flag.BoolVar(&af.help, "help", false, usageMsgs["help"])
 	flag.BoolVar(&af.version, "v", false, "")
 	flag.BoolVar(&af.version, "version", false, usageMsgs["version"])
-	// checkConfSubCmd sub-command
+	// checkconf sub-command
 	af.checkConfSubCmd = &checkConfSubCmd{
 		fs: flag.NewFlagSet(cCheckConfSubCmd, flag.ExitOnError),
 	}
