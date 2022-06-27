@@ -16,4 +16,3 @@
 # Big
 
 * Change name to "Release Tools"
-* Rename sub-command checkConf to checkconf.
