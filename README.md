@@ -9,14 +9,14 @@ A collection of tools to help you release software.
 Generate a current and next tag info based on special tags in the commit messages.
 Currently, special tags refer to commit message which begin with a tag of:
 
-| Tag             | Description                                                                    |
-|-----------------|--------------------------------------------------------------------------------|
-| `add: `         | Marks that a new feature was added and increments the minor version.           |
-| `chg: `         | A standard change and increments the patch version.                            |
-| `dep: `         | Indicates a feature is deprecated and will increment the patch number.         |
-| `rmv: `         | Marks a feature removed but not a breaking change, increments the patch number. |
-| `rel: x.x.x`    | Will use the version number specified after the tag.                           |
-| BREAKING CHANGE | Will cause the major number to increment by 1.                                 |
+| Tag              | Description                                                                                                                                                                |
+|------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `add: `          | Marks that a new feature was added and increments the minor version.                                                                                                       |
+| `chg: `          | A standard change and increments the patch version.                                                                                                                        |
+| `dep: `          | Indicates a feature is deprecated and will increment the patch number.                                                                                                     |
+| `rmv: `          | Marks a feature removed but not a breaking change, increments the patch number.                                                                                            |
+| `rel: x.x.x-rc1` | Will use the version number specified after the tag, anything after the `-` is optional. The dash is important otherwise anything after the third digit will be truncated. |
+| BREAKING CHANGE  | Will cause the major number to increment by 1.                                                                                                                             |
 
 ### Examples
 

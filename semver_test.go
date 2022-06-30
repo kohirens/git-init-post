@@ -129,3 +129,31 @@ func TestGetSemverInfo(tester *testing.T) {
 		})
 	}
 }
+
+func TestSettingRelVersion(tester *testing.T) {
+	var tests = []struct {
+		name    string
+		want    string
+		fixture string
+	}{
+		{"withExtra", "1.0.0-rc", "repo-05"},
+		{"invalidExtra", "1.0.0", "repo-06"},
+		{"relOverBreakingChange", "1.0.0-rc3", "repo-07"},
+	}
+
+	for _, test := range tests {
+		tester.Run(test.name, func(t *testing.T) {
+			repoPath := setupARepository(test.name, test.fixture)
+
+			got, err := GetSemverInfo(repoPath)
+
+			if err != nil {
+				t.Errorf("unexpected error %q", err.Error())
+			}
+
+			if got.NextVersion != test.want {
+				t.Errorf("unexpected next version, want %q, got %q", test.want, got.NextVersion)
+			}
+		})
+	}
+}
