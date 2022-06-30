@@ -1,3 +1,4 @@
+// Contains methods that are helpful for testing.
 package main
 
 import (

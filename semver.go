@@ -192,12 +192,12 @@ func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 		return
 	}
 
-	re := regexp.MustCompile(`rel:\s*(\d+\.\d+\.\d+)`)
+	re := regexp.MustCompile(`rel:\s*(\d+\.\d+\.\d+)(-.+)?`)
 	res := re.FindStringSubmatch(commitLogs)
-	// Look for commit message format "rel: x.x.x"
+	// Look for commit message format "rel: x.x.x-optional"
 	if len(res) > 0 {
 		nextVerReason = "`rel:` type was found in the git logs from the last release to the current HEAD"
-		nextVer = res[1]
+		nextVer = res[1] + res[2]
 		return
 	}
 
