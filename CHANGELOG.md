@@ -2,6 +2,16 @@
 ## [Unreleased]
 
 
+<a name="2.0.0"></a>
+## [2.0.0] - 2022-06-30
+### Added
+- rel tag can now have context after semantic version.
+
+### Changed
+- Renamed sub-command checkConf to checkconf.
+- Renamed method from check to validate for flags.
+
+
 <a name="1.2.9"></a>
 ## [1.2.9] - 2022-05-16
 ### Fixed
@@ -161,7 +171,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/1.2.9...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.0.0...HEAD
+[2.0.0]: https://github.com/kohirens/git-tool-belt/compare/1.2.9...2.0.0
 [1.2.9]: https://github.com/kohirens/git-tool-belt/compare/1.2.8...1.2.9
 [1.2.8]: https://github.com/kohirens/git-tool-belt/compare/1.2.7...1.2.8
 [1.2.7]: https://github.com/kohirens/git-tool-belt/compare/1.2.6...1.2.7
