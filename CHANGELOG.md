@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="2.0.1"></a>
+## [2.0.1] - 2022-07-14
+### Fixed
+- checking nil value.
+
+
 <a name="2.0.0"></a>
 ## [2.0.0] - 2022-06-30
 ### Added
@@ -171,7 +177,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.0.0...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.0.1...HEAD
+[2.0.1]: https://github.com/kohirens/git-tool-belt/compare/2.0.0...2.0.1
 [2.0.0]: https://github.com/kohirens/git-tool-belt/compare/1.2.9...2.0.0
 [1.2.9]: https://github.com/kohirens/git-tool-belt/compare/1.2.8...1.2.9
 [1.2.8]: https://github.com/kohirens/git-tool-belt/compare/1.2.7...1.2.8
