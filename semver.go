@@ -134,7 +134,7 @@ func getCurrentVersion(repoPath string) (latestVersion string) {
 	}
 
 	versionsData := bytes.Trim(sco, "\n")
-	if len(versionsData) > 0 {
+	if versionsData != nil && len(versionsData) > 0 {
 		// Split output into an array by newline.
 		versions := bytes.Split(versionsData, []byte("\n"))
 		latestVersion = string(versions[0])
