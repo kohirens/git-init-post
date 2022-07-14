@@ -20,7 +20,11 @@ It's one cool way to make test repos that work very well.
 4. Once you get the test repo to a state that you want, it's time to bundle it
    up using the Git bundle command:
    ```
-   git bundle create <bundle-filename> <branch>
+   git bundle create <bundle-filename> <branch> --tags
+   ```
+   NOTE: For all branches and tags
+   ```
+   git bundle create <bundle-filename> --branches --tags
    ```
 5. So from inside the test repository directory run the command, for
    example
