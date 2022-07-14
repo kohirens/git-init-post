@@ -2,6 +2,8 @@
 
 A collection of tools to help you release software.
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/kohirens/git-tool-belt/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/kohirens/git-tool-belt/tree/main)
+
 ## Features
 
 ## Sub Command "semver"
