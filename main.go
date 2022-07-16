@@ -38,6 +38,8 @@ func main() {
 		return
 	}
 
+	infof("verbose level: %v", verbosityLevel)
+
 	if e := appFlags.validate(); e != nil {
 		mainErr = e
 		return

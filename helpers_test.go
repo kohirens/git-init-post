@@ -28,11 +28,10 @@ func TestHasChangesToTag(tester *testing.T) {
 			af := &applicationFlags{
 				taggable: &taggableSubCmd{
 					commitRange: test.tag,
-					verbose:     false,
 				},
 			}
 
-			got := hasUnreleasedCommitsWithTags(tmpRepo, af.taggable.commitRange, af.taggable.verbose)
+			got := hasUnreleasedCommitsWithTags(tmpRepo, af.taggable.commitRange)
 
 			if got != test.want {
 				t.Errorf("want %v, got %v", test.want, got)

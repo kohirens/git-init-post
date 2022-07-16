@@ -16,4 +16,5 @@ var usageMsgs = map[string]string{
 	"checkConf":          "sub-command runs a check for the git-chglog configuration adds when missing",
 	"checkConf.path":     "path to the configuration",
 	"checkConf.repo":     "repo to name in the generated configuration, should it be missing.",
+	"verbosity":          "Set the level of information printed when running.",
 }

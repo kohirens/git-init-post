@@ -40,7 +40,6 @@ type taggableSubCmd struct {
 	fs          *flag.FlagSet
 	commitRange string
 	repo        string
-	verbose     bool
 }
 
 const (
@@ -55,6 +54,7 @@ func (af *applicationFlags) define() {
 	flag.BoolVar(&af.help, "help", false, usageMsgs["help"])
 	flag.BoolVar(&af.version, "v", false, "")
 	flag.BoolVar(&af.version, "version", false, usageMsgs["version"])
+	flag.IntVar(&verbosityLevel, "verbosity", 0, usageMsgs["verbosity"])
 	// checkconf sub-command
 	af.checkConfSubCmd = &checkConfSubCmd{
 		fs: flag.NewFlagSet(cCheckConfSubCmd, flag.ExitOnError),
@@ -76,8 +76,6 @@ func (af *applicationFlags) define() {
 	}
 	af.taggable.fs.StringVar(&af.taggable.commitRange, "commitRange", "", usageMsgs["commit.range"])
 	af.taggable.fs.StringVar(&af.taggable.repo, "repo", "", usageMsgs["repo"])
-	af.taggable.fs.BoolVar(&af.taggable.verbose, "v", false, "")
-	af.taggable.fs.BoolVar(&af.taggable.verbose, "verbose", false, usageMsgs["taggable.verbose"])
 }
 
 // check Verify that all flags are set appropriately.
