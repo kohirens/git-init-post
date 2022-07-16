@@ -158,3 +158,27 @@ func TestSettingRelVersion(tester *testing.T) {
 		})
 	}
 }
+
+func TestScrubNumber(tester *testing.T) {
+	var tests = []struct {
+		name    string
+		want    string
+		fixture string
+	}{
+		{"scrubZero", "0", "0"},
+		{"scrubFour", "4", "4"},
+		{"scrubReleaseCandidate", "22", "22-rc1"},
+		{"scrubTwoWhatever", "2", "2.whatever"},
+		{"scrubZero", "", ""},
+	}
+
+	for _, test := range tests {
+		tester.Run(test.name, func(t *testing.T) {
+			got := scrubNumber(test.fixture)
+
+			if got != test.want {
+				t.Errorf("unexpected next version, want %q, got %q", test.want, got)
+			}
+		})
+	}
+}
