@@ -209,7 +209,6 @@ func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 
 	// Look for "BREAKING CHANGE" to increment major number
 	if strings.Contains(commitLogs, "BREAKING CHANGE\n") {
-		// TODO: Use a lib to handle incrementing the semantic version number.
 		ver[0], nextVer, nextVerReason = incrementNumber(ver[0], nextVer, "`BREAKING CHANGE` keyword found in git logs")
 		ver[1] = "0"
 		ver[2] = "0"
