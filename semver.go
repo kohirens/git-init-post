@@ -234,3 +234,17 @@ func incrementNumber(a, nv, nvr string) (string, string, string) {
 
 	return strconv.FormatInt(ret+1, 10), nv, nvr
 }
+
+// incrementNumber add 1 to a numeric string, on failure return numeric number and the reason it failed.
+func scrubNumber(a string) string {
+	re := regexp.MustCompile(`^(\d+)(-.+)?`)
+	res := re.FindStringSubmatch(a)
+	dbugf("\na = %v and res = %v\n", a, res)
+	if len(res) > 0 {
+		dbugf("\nfound %q in %q of length %v\n", res[1], res[0], len(res))
+		//fmt.Printf("\nfound %q in %q of length %v\n", res[1], res[0], len(res))
+		return res[1]
+	}
+
+	return a
+}
