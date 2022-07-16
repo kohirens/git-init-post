@@ -139,7 +139,8 @@ func TestSettingRelVersion(tester *testing.T) {
 		{"withExtra", "1.0.0-rc", "repo-05"},
 		{"invalidExtra", "1.0.0", "repo-06"},
 		{"relOverBreakingChange", "1.0.0-rc3", "repo-07"},
-		{"nextAfterNonStandardTag", "1.1.0", "repo-08"},
+		{"noCommitToIncrementNextVersion", "1.0.0-rc1", "repo-08"},
+		{"nextAfterNonStandardTag", "1.0.0-rc1", "repo-09"},
 	}
 
 	for _, test := range tests {
