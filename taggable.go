@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -12,8 +11,7 @@ func IsTaggable(af *applicationFlags) bool {
 		repoPath = af.taggable.repo
 	}
 
-	if af.taggable.verbose {
-		fmt.Printf("repoPath = %q\n", repoPath)
-	}
-	return hasUnreleasedCommitsWithTags(repoPath, af.taggable.commitRange, af.taggable.verbose)
+	infof("repoPath = %q\n", repoPath)
+
+	return hasUnreleasedCommitsWithTags(repoPath, af.taggable.commitRange)
 }
