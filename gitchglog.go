@@ -24,7 +24,7 @@ func addMissingChgLogConfig(conf, gitUrl string) error {
 	}
 
 	confDir := filepath.Dir(conf)
-	fmt.Printf("no changelog file found at %q, adding the default...\n", confDir)
+	logf("no changelog file found at %q, adding the default...", confDir)
 
 	if e := os.MkdirAll(confDir, dirMode); e != nil {
 		return fmt.Errorf("clould not make dir %q", confDir)
@@ -36,7 +36,7 @@ func addMissingChgLogConfig(conf, gitUrl string) error {
 	if e := ioutil.WriteFile(conf, []byte(outStr), dirMode); e != nil {
 		return e
 	}
-	fmt.Printf("added git-chglog config at %q\n", conf)
+	logf("added git-chglog config at %q\n", conf)
 
 	if e := ioutil.WriteFile(confDir+"/CHANGELOG.tpl.md", []byte(gitChgLogChangelog), 0774); e != nil {
 		return e

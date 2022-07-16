@@ -28,7 +28,8 @@ func TestMain(m *testing.M) {
 	_ = os.RemoveAll(testTmp)
 	// Set up a temporary dir for generate files
 	_ = os.Mkdir(testTmp, dirMode) // set up a temporary dir for generate files
-
+	// Set the log level below 0 to turn off all output.
+	verbosityLevel = -1
 	// Run all tests
 	exitCode := m.Run()
 	// Clean up

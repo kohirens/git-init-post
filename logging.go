@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 const (
+	verboseLvlLog  = 0
 	verboseLvlInfo = 1
 	verboseLvlWarn = 2
 	verboseLvlErr  = 3
@@ -33,4 +34,9 @@ func errf(message string, vars ...interface{}) {
 
 func dbugf(message string, vars ...interface{}) {
 	verboseF(verboseLvlDbug, message, vars...)
+}
+
+// logf Log all the time, useful for giving the user feedback on progress.
+func logf(message string, vars ...interface{}) {
+	verboseF(verboseLvlLog, message, vars...)
 }
