@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  vro: kohirens/version-release@dev:alpha
+  vro: kohirens/version-release@2.1.0
 
 parameters:
   ssh_finger:
@@ -93,6 +93,25 @@ jobs:
             go generate
             chmod +x ./build-gh-artifacts.sh
             ./build-gh-artifacts.sh
+  check-if-ready-for-release:
+    executor: vro/default
+    steps:
+      - checkout
+      - run:
+          name: "Check if changelog is up-to-date"
+          command: |
+            # TODO: Use the git-tool-belt image and check if the changelog is up-to-date
+            # check if the last commit message is the auto update message.
+            isChangelogUpToDate=$(git show -s HEAD --grep 'automated update of CHANGELOG.md')
+            lastExitCode=$?
+            echo "lastExitCode=\"${lastExitCode}\""
+            if [ -z "${isChangelogUpToDate}" ]; then
+                echo "not ready for a release, exiting gracefully"
+                exit 0
+            fi
+            echo "last commit indicates it was from auto updating the changelog"
+            echo "last commit message:"
+            echo "${isChangelogUpToDate}"
 
 filter-semantic-tag: &filter-semantic-tag
   tags:
@@ -124,8 +143,8 @@ workflows:
     when:
       and:
         - equal: [main, << pipeline.git.branch >>]
-        - << pipeline.parameters.triggered_by_bot >>
     jobs:
+      - check-if-ready-for-release
       - vro/tag-and-release:
           context: orb-publishing
 
