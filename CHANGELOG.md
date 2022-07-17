@@ -2,9 +2,17 @@
 ## [Unreleased]
 
 
-<a name="2.0.1"></a>
-## [2.0.1] - 2022-07-14
+<a name="2.1.0"></a>
+## [2.1.0] - 2022-07-17
+### Added
+- Set commit range when not set for taggable sub-comand.
+- Variable to set verbosity level for the entire application.
+- scrubNumber function on incrementing the patch number when containing a trailing release tag.
+- logf function for logging level 0 (zero) to allow all application logging to be turned off.
+- Circle CI status badge to README.
+
 ### Fixed
+- tag-and-release CI workflow.
 - checking nil value.
 
 
@@ -177,8 +185,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.0.1...HEAD
-[2.0.1]: https://github.com/kohirens/git-tool-belt/compare/2.0.0...2.0.1
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.1.0...HEAD
+[2.1.0]: https://github.com/kohirens/git-tool-belt/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/kohirens/git-tool-belt/compare/1.2.9...2.0.0
 [1.2.9]: https://github.com/kohirens/git-tool-belt/compare/1.2.8...1.2.9
 [1.2.8]: https://github.com/kohirens/git-tool-belt/compare/1.2.7...1.2.8
