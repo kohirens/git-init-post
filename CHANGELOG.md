@@ -2,6 +2,12 @@
 ## [Unreleased]
 
 
+<a name="2.1.2"></a>
+## [2.1.2] - 2023-05-24
+### Changed
+- Upgraded git-chglog To Version v0.15.4
+
+
 <a name="2.1.1"></a>
 ## [2.1.1] - 2023-05-24
 ### Changed
@@ -191,7 +197,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.1.1...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.1.2...HEAD
+[2.1.2]: https://github.com/kohirens/git-tool-belt/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/kohirens/git-tool-belt/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/kohirens/git-tool-belt/compare/2.0.0...2.1.0
 [2.0.0]: https://github.com/kohirens/git-tool-belt/compare/1.2.9...2.0.0
