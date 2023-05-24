@@ -58,8 +58,7 @@ RUN mkdir -p ~/bin ~/src
 
 WORKDIR "/home/${USER_NAME}/src/${REPO}"
 
-# Install Go helpful dev tools.
-RUN go install github.com/git-chglog/git-chglog/cmd/git-chglog@v0.15.0 \
+RUN go install github.com/git-chglog/git-chglog/cmd/git-chglog@v0.15.4 \
  && go clean -cache -modcache -testcache
 
 COPY .docker/start.sh /usr/local/bin/start.sh
