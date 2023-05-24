@@ -4,6 +4,14 @@ orbs:
   vro: kohirens/version-release@2.3.5
 
 parameters:
+  ctx_auto_release:
+    description: CircleCI context containing automation secrets.
+    type: string
+    default: "kohirens-automation"
+  ctx_dockerhub:
+    description: CircleCI context containing Docker Hub secrets.
+    type: string
+    default: "kohirens-automation-dockerhub"
   ssh_finger:
     description: SSH fingerprint.
     type: string
@@ -117,7 +125,7 @@ workflows:
         - equal: [webhook, << pipeline.trigger_source >>]
     jobs:
       - vro/publish-changelog:
-          context: orb-publishing
+          context: << pipeline.parameters.ctx_auto_release >>
           ssh_finger: << pipeline.parameters.ssh_finger >>
 
   publish-release-tag:
@@ -126,15 +134,15 @@ workflows:
         - equal: [main, << pipeline.git.branch >>]
     jobs:
       - vro/tag-and-release:
-          context: orb-publishing
+          context: << pipeline.parameters.ctx_auto_release >>
 
   on-tag-release:
     jobs:
       - publish-image:
-          context: orb-publishing
+          context: << pipeline.parameters.ctx_dockerhub >>
           filters:
             <<: *filter-semantic-tag
       - publish-execs:
-          context: orb-publishing
+          context: << pipeline.parameters.ctx_auto_release >>
           filters:
             <<: *filter-semantic-tag
