@@ -105,6 +105,15 @@ workflows:
                 context: << pipeline.parameters.ctx_docker >>
                 filters: { branches: { ignore: [main, auto-update-changelog] } }
 
+    workflow-selector:
+        when:
+            and:
+                - equal: [main, << pipeline.git.branch >>]
+        jobs:
+            - vro/workflow-selector:
+                context: << pipeline.parameters.ctx_auto_rel >>
+                ssh_finger: << pipeline.parameters.ssh_finger >>
+
     publish-changelog:
         when:
             and:
