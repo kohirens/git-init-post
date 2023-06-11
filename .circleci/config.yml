@@ -20,7 +20,7 @@ parameters:
         description: SSH fingerprint.
         type: string
     triggered_flow:
-        default: ""
+        default: "workflow-selector"
         description: Indicates with workflow should run.
         type: string
 
@@ -108,6 +108,7 @@ workflows:
     workflow-selector:
         when:
             and:
+                - equal: ["workflow-selector", << pipeline.parameters.triggered_flow >>]
                 - equal: [main, << pipeline.git.branch >>]
         jobs:
             - vro/workflow-selector:
