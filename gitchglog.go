@@ -20,6 +20,7 @@ func addMissingChgLogConfig(conf, gitUrl string) error {
 	infof("working directory = %s\n", wd)
 
 	if stdlib.PathExist(conf) {
+		fmt.Println("found git-chglog configuration")
 		return nil
 	}
 
@@ -46,7 +47,7 @@ func addMissingChgLogConfig(conf, gitUrl string) error {
 		return fmt.Errorf("unable to add %q", conf)
 	}
 
-	infof("found git-chglog config here %q\n", conf)
+	fmt.Println("added git-chglog configuration")
 
 	return nil
 }
