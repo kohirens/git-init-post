@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/kohirens/stdlib"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -34,12 +33,12 @@ func addMissingChgLogConfig(conf, gitUrl string) error {
 	url := convertGitToHttp(gitUrl)
 	outStr := strings.Replace(gitChgLogConf, "${VCS_URL}", "'"+url+"'", 1)
 
-	if e := ioutil.WriteFile(conf, []byte(outStr), dirMode); e != nil {
+	if e := os.WriteFile(conf, []byte(outStr), dirMode); e != nil {
 		return e
 	}
 	logf("added git-chglog config at %q\n", conf)
 
-	if e := ioutil.WriteFile(confDir+"/CHANGELOG.tpl.md", []byte(gitChgLogChangelog), 0774); e != nil {
+	if e := os.WriteFile(confDir+"/CHANGELOG.tpl.md", []byte(gitChgLogChangelog), 0774); e != nil {
 		return e
 	}
 
