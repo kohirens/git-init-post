@@ -111,14 +111,13 @@ workflows:
                 - equal: [main, << pipeline.git.branch >>]
         jobs:
             - vro/workflow-selector:
-                context: << pipeline.parameters.ctx_auto_rel >>
+                context: << pipeline.parameters.ctx_auto_release >>
                 ssh_finger: << pipeline.parameters.ssh_finger >>
 
     publish-changelog:
         when:
             and:
-                - equal: [main, << pipeline.git.branch >>]
-                - equal: [publish changelog, << pipeline.parameters.triggered_flow >>]
+                - equal: ["publish-changelog", << pipeline.parameters.triggered_flow >>]
         jobs:
             - vro/publish-changelog:
                 context: << pipeline.parameters.ctx_auto_release >>
@@ -127,8 +126,7 @@ workflows:
     publish-release-tag:
         when:
             and:
-                - equal: [main, << pipeline.git.branch >>]
-                - equal: ["publish-changelog", << pipeline.parameters.triggered_flow >>]
+                - equal: ["tag-and-release", << pipeline.parameters.triggered_flow >>]
         jobs:
             - run-test:
                 context: << pipeline.parameters.ctx_docker >>
@@ -138,10 +136,9 @@ workflows:
                 requires: [ run-test ]
 
     on-tag-release:
-        when:
-            and:
-                - equal: [main, << pipeline.git.branch >>]
-                - equal: ["tag-and-release", << pipeline.parameters.triggered_flow >>]
+        when: # see https://discuss.circleci.com/t/tag-matching-using-condition-an-example/45876
+            or:
+                - matches: { pattern: "^v?\\d+\\.\\d+\\.\\d+$", value: << pipeline.git.tag >> }
         jobs:
             - publish-execs:
                 context: << pipeline.parameters.ctx_auto_release >>
