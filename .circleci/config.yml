@@ -1,148 +1,141 @@
 version: 2.1
 
 orbs:
-  vro: kohirens/version-release@2.3.5
+    vro: kohirens/version-release@dev:alpha
 
 parameters:
-  ctx_auto_release:
-    description: CircleCI context containing automation secrets.
-    type: string
-    default: "kohirens-automation"
-  ctx_dockerhub:
-    description: CircleCI context containing Docker Hub secrets.
-    type: string
-    default: "kohirens-automation-dockerhub"
-  ssh_finger:
-    description: SSH fingerprint.
-    type: string
-    default: "73:9b:43:f6:57:91:be:f6:0f:a4:c1:05:40:37:ab:79"
-  triggered_by_bot:
-    description: Trigger publishing a release tag workflow.
-    type: boolean
-    default: false
+    app_name:
+        default: "git-tool-belt"
+        type: string
+    ctx_auto_release:
+        default: kohirens-automation
+        description: CircleCI context containing automation secrets.
+        type: string
+    ctx_docker:
+        default: kohirens-automation-dockerhub
+        description: CircleCI context containing Docker Hub secrets.
+        type: string
+    ssh_finger:
+        default: "73:9b:43:f6:57:91:be:f6:0f:a4:c1:05:40:37:ab:79"
+        description: SSH fingerprint.
+        type: string
+    triggered_flow:
+        default: ""
+        description: Indicates with workflow should run.
+        type: string
 
 jobs:
-  co:
-    working_directory: ~/repo
-    docker:
-      - image: cimg/go:1.17
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.mod" }}
-      - run:
-          name: Install Dependencies
-          command: go mod tidy
-      - save_cache:
-          key: go-mod-v1-{{ checksum "go.mod" }}
-          paths:
-            - "/go/pkg/mod"
-      - persist_to_workspace:
-          root: .
-          paths: [ ./* ]
+    run-test:
+        docker:
+            - image: cimg/go:1.20
+        steps:
+            - checkout
+            - restore_cache:
+                keys:
+                    - go-mod-v1-{{ checksum "go.mod" }}
+            - run:
+                name: Install Dependencies
+                command: go mod tidy
+            - save_cache:
+                key: go-mod-v1-{{ checksum "go.mod" }}
+                paths:
+                    - "/home/circleci/go/pkg/mod"
+                    - "/go/pkg/mod"
+            - run:
+                name: Run tests
+                command: |
+                  go test -v
+            - persist_to_workspace:
+                root: .
+                paths: [ ./* ]
 
-  run-test:
-    docker:
-      - image: cimg/go:1.17
-    steps:
-      - attach_workspace:
-          at: .
-      - restore_cache:
-          keys:
-            - go-mod-v1-{{ checksum "go.mod" }}
-      - run:
-          name: "Unit test"
-          command: |
-            go test -v
+    publish-execs:
+        parameters:
+            app_name:
+                type: string
+            build_tag:
+                default: << pipeline.git.tag >>
+                type: string
+        docker:
+            - image: kohirens/circleci-go:0.4.0
+              auth:
+                  username: ${DH_USER}
+                  password: ${DH_PASS}
+        steps:
+            - checkout
+            - run:
+               name: Build
+               command: |
+                   echo "Publishing tag '<< parameters.build_tag >>'"
+                   directory="."
+                   go generate
+                   chmod +x ./.circleci/build-gh-artifacts.sh
+                   ./build-gh-artifacts.sh
 
-  publish-image:
-    docker:
-      - image: cimg/go:1.17
-    resource_class: small
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: "Build"
-          command: |
-            echo "Publishing tag '<< pipeline.git.tag >>'"
-            export BUILD_VER="<< pipeline.git.tag >>"
-            if [ -z "${BUILD_VER}" ]; then
-                echo "cannot publish a Docker image, release tag was empty"
-                exit 1
-            fi
-            docker build --build-arg "USER_NAME=circleci" --tag "kohirens/git-tool-belt:${BUILD_VER}" --file .docker/Dockerfile .
-            docker login --username "${DH_USER}" --password "${DH_PASS}"
-            docker push "kohirens/git-tool-belt:${BUILD_VER}"
-            docker rmi "kohirens/git-tool-belt:${BUILD_VER}"
+    publish-image:
+        docker:
+            - image: cimg/go:1.20
+        resource_class: small
+        steps:
+            - setup_remote_docker:
+                docker_layer_caching: true
+            - checkout
+            - attach_workspace:
+                at: .
+            - run:
+                name: "Build"
+                command: |
+                    echo "Publishing tag '<< pipeline.git.tag >>'"
+                    export BUILD_VER="<< pipeline.git.tag >>"
+                    if [ -z "${BUILD_VER}" ]; then
+                        echo "cannot publish a Docker image, release tag was empty"
+                    exit 1
+                    fi
+                    docker build --build-arg "USER_NAME=circleci" --tag "kohirens/git-tool-belt:${BUILD_VER}" --file .docker/Dockerfile .
+                    docker login --username "${DH_USER}" --password "${DH_PASS}"
+                    docker push "kohirens/git-tool-belt:${BUILD_VER}"
+                    docker rmi "kohirens/git-tool-belt:${BUILD_VER}"
 
-  publish-execs:
-    docker:
-      - image: kohirens/circleci-go:0.2.1
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: "Build"
-          command: |
-            echo "Publishing tag '<< pipeline.git.tag >>'"
-            export BUILD_VER="<< pipeline.git.tag >>"
-            if [ -z "${BUILD_VER}" ]; then
-                echo "cannot publish executables, release tag was empty"
-                exit 1
-            fi
-            go install
-            export PATH="${PATH}:/root/go/bin"
-            go generate
-            chmod +x ./build-gh-artifacts.sh
-            ./build-gh-artifacts.sh
-
-filter-semantic-tag: &filter-semantic-tag
-  tags:
-    only: /^v?\d+\.\d+\.\d+$/
-  branches:
-    ignore: /.*/
 
 workflows:
-  pull-request:
-    jobs:
-      - co:
-          filters:
-            branches:
-              ignore: /main|auto-update-changelog/
-      - run-test:
-          requires: [ co ]
+    pull-request:
+        jobs:
+            - run-test:
+                name: "run test"
+                context: << pipeline.parameters.ctx_docker >>
+                filters: { branches: { ignore: [main, auto-update-changelog] } }
 
-  publish-changelog:
-    when:
-      and:
-        - equal: [main, << pipeline.git.branch >>]
-        - equal: [webhook, << pipeline.trigger_source >>]
-    jobs:
-      - vro/publish-changelog:
-          context: << pipeline.parameters.ctx_auto_release >>
-          ssh_finger: << pipeline.parameters.ssh_finger >>
+    publish-changelog:
+        when:
+            and:
+                - equal: [main, << pipeline.git.branch >>]
+                - equal: [publish changelog, << pipeline.parameters.triggered_flow >>]
+        jobs:
+            - vro/publish-changelog:
+                context: << pipeline.parameters.ctx_auto_release >>
+                ssh_finger: << pipeline.parameters.ssh_finger >>
 
-  publish-release-tag:
-    when:
-      and:
-        - equal: [main, << pipeline.git.branch >>]
-    jobs:
-      - vro/tag-and-release:
-          context: << pipeline.parameters.ctx_auto_release >>
+    publish-release-tag:
+        when:
+            and:
+                - equal: [main, << pipeline.git.branch >>]
+                - equal: ["publish-changelog", << pipeline.parameters.triggered_flow >>]
+        jobs:
+            - run-test:
+                context: << pipeline.parameters.ctx_docker >>
+                name: "run test"
+            - vro/tag-and-release:
+                context: << pipeline.parameters.ctx_auto_release >>
+                requires: [ run-test ]
 
-  on-tag-release:
-    jobs:
-      - publish-image:
-          context: << pipeline.parameters.ctx_dockerhub >>
-          filters:
-            <<: *filter-semantic-tag
-      - publish-execs:
-          context: << pipeline.parameters.ctx_auto_release >>
-          filters:
-            <<: *filter-semantic-tag
+    on-tag-release:
+        when:
+            and:
+                - equal: [main, << pipeline.git.branch >>]
+                - equal: ["tag-and-release", << pipeline.parameters.triggered_flow >>]
+        jobs:
+            - publish-execs:
+                context: << pipeline.parameters.ctx_auto_release >>
+                app_name: <<pipeline.parameters.app_name>>
+            - publish-image:
+                context: << pipeline.parameters.ctx_docker >>
