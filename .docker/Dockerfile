@@ -6,7 +6,7 @@ ARG REPO='github.com/kohirens/git-tool-belt'
 ARG GLIBC_VER='2.34-r0'
 ARG GH_VER='2.4.0'
 
-FROM golang:1.17-alpine3.15 AS dev
+FROM golang:1.20-alpine3.18 AS dev
 
 ARG USER_NAME
 ARG USER_UID
