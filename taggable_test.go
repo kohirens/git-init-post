@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	help "github.com/kohirens/stdlib/test"
+	"testing"
+)
 
 func TestIsTaggable(tester *testing.T) {
 	var tests = []struct {
@@ -19,7 +22,7 @@ func TestIsTaggable(tester *testing.T) {
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
-			tmpRepo := setupARepository(test.repo, test.bundle)
+			tmpRepo := help.SetupARepository(test.bundle, tmpDir, fixtureDir, ps)
 			test.args = append(test.args, "-repo "+tmpRepo)
 
 			cmd := getTestBinCmd(test.args)

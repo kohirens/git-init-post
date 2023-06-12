@@ -1,2 +1,4 @@
 github.com/kohirens/stdlib v0.0.0-20220212191217-7813dd2dccc2 h1:dPsUE4b6T51BYKkmrS/elHi00rw5aFIHWkOPYBtUEkY=
 github.com/kohirens/stdlib v0.0.0-20220212191217-7813dd2dccc2/go.mod h1:Hse6Wv2QlXDGu5DQ/WchCAieavz1zH46DoUNPuMvjHU=
+github.com/kohirens/stdlib v0.0.0-20230608163356-9feb406f8a94 h1:P/go72oDi85414FmpXCMopS45an3D2eq43IE19xo974=
+github.com/kohirens/stdlib v0.0.0-20230608163356-9feb406f8a94/go.mod h1:Hse6Wv2QlXDGu5DQ/WchCAieavz1zH46DoUNPuMvjHU=
