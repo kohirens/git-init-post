@@ -2,8 +2,17 @@
 ## [Unreleased]
 
 
-<a name="2.1.3"></a>
-## [2.1.3] - 2023-05-24
+<a name="2.2.0"></a>
+## [2.2.0] - 2023-06-12
+### Added
+- An EditorConfig To Ensure Proper Formatting
+
+### Changed
+- Begin Reorganizing Package and Dependencies
+- Replace ioutil With os Package
+- Added Output To git-chglog
+- Container Software
+
 
 <a name="2.1.2"></a>
 ## [2.1.2] - 2023-05-24
@@ -200,8 +209,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.1.3...HEAD
-[2.1.3]: https://github.com/kohirens/git-tool-belt/compare/2.1.2...2.1.3
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.2.0...HEAD
+[2.2.0]: https://github.com/kohirens/git-tool-belt/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/kohirens/git-tool-belt/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/kohirens/git-tool-belt/compare/2.1.0...2.1.1
 [2.1.0]: https://github.com/kohirens/git-tool-belt/compare/2.0.0...2.1.0
