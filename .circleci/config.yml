@@ -96,7 +96,6 @@ jobs:
                     docker push "kohirens/git-tool-belt:${BUILD_VER}"
                     docker rmi "kohirens/git-tool-belt:${BUILD_VER}"
 
-
 workflows:
     pull-request:
         jobs:
