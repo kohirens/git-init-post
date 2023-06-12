@@ -2,6 +2,9 @@
 ## [Unreleased]
 
 
+<a name="2.2.1"></a>
+## [2.2.1] - 2023-06-12
+
 <a name="2.2.0"></a>
 ## [2.2.0] - 2023-06-12
 ### Added
@@ -209,7 +212,8 @@
 - Version subcommand.
 
 
-[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.2.0...HEAD
+[Unreleased]: https://github.com/kohirens/git-tool-belt/compare/2.2.1...HEAD
+[2.2.1]: https://github.com/kohirens/git-tool-belt/compare/2.2.0...2.2.1
 [2.2.0]: https://github.com/kohirens/git-tool-belt/compare/2.1.2...2.2.0
 [2.1.2]: https://github.com/kohirens/git-tool-belt/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/kohirens/git-tool-belt/compare/2.1.0...2.1.1
