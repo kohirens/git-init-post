@@ -2,8 +2,20 @@ package main
 
 import (
 	"encoding/json"
+	help "github.com/kohirens/stdlib/test"
+	"path/filepath"
+
 	"os"
 	"testing"
+)
+
+const (
+	ps = string(os.PathSeparator)
+)
+
+var (
+	tmpDir, _  = filepath.Abs("tmp")
+	fixtureDir = "testdata"
 )
 
 func TestVersionSubCmd(tester *testing.T) {
@@ -23,7 +35,7 @@ func TestVersionSubCmd(tester *testing.T) {
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
-			tmpRepo := setupARepository(test.repo, test.repo)
+			tmpRepo := help.SetupARepository(test.repo, tmpDir, fixtureDir, ps)
 			bvFile := tmpRepo + PS + "build-version.json"
 			test.args = append(test.args, "-repo "+tmpRepo, "-save "+bvFile)
 			cmd := getTestBinCmd(test.args)
@@ -104,7 +116,7 @@ func TestGetSemverInfo(tester *testing.T) {
 		tester.Run(test.name, func(t *testing.T) {
 			tmpRepo := ""
 			if test.repo != "repo-dne" {
-				tmpRepo = setupARepository(test.repo, test.repo)
+				tmpRepo = help.SetupARepository(test.repo, tmpDir, fixtureDir, ps)
 			}
 
 			bvData, err := GetSemverInfo(tmpRepo)
@@ -132,9 +144,9 @@ func TestGetSemverInfo(tester *testing.T) {
 
 func TestSettingRelVersion(tester *testing.T) {
 	var tests = []struct {
-		name    string
-		want    string
-		fixture string
+		name   string
+		want   string
+		bundle string
 	}{
 		{"withExtra", "1.0.0-rc", "repo-05"},
 		{"invalidExtra", "1.0.0", "repo-06"},
@@ -145,7 +157,7 @@ func TestSettingRelVersion(tester *testing.T) {
 
 	for _, test := range tests {
 		tester.Run(test.name, func(t *testing.T) {
-			repoPath := setupARepository(test.name, test.fixture)
+			repoPath := help.SetupARepository(test.bundle, tmpDir, fixtureDir, ps)
 
 			got, err := GetSemverInfo(repoPath)
 

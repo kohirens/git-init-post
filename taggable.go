@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/kohirens/git-tool-belt/pkg/git"
 	"os"
 )
 
@@ -18,7 +19,7 @@ func IsTaggable(af *applicationFlags) bool {
 		revRange = getRevisionRange(repoPath)
 	}
 
-	return hasUnreleasedCommitsWithTags(repoPath, revRange)
+	return git.HasUnreleasedCommitsWithTags(repoPath, revRange)
 }
 
 // getRevisionRange determines the revision range based on current.

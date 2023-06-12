@@ -2,7 +2,7 @@
 # -----------
 /.idea/
 /testdata/repo-*/
-/tmp/
+tmp/
 
 # Files
 # -----

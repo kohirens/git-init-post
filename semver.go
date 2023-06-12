@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/kohirens/git-tool-belt/pkg/help"
 	"html/template"
 	"os"
 	"regexp"
@@ -83,7 +84,7 @@ func GetSemverInfo(repoPath string) (*buildVersion, error) {
 
 // FormatForGo Convert the JSON into Go code.
 func formatForGo(svInfo *buildVersion, pn, vn string) ([]byte, error) {
-	svData := &byteBuf{}
+	svData := &help.ByteBuf{}
 
 	tmplStr := `package {{ .PackageName }}
 // Code generated .* DO NOT EDIT.
@@ -127,7 +128,7 @@ func getCurrentVersion(repoPath string) (latestVersion string) {
 	latestVersion = "HEAD"
 
 	// Default to HEAD when no tag.
-	sco, sce, exitCode, err3 := runRepoCmd(repoPath, "tag", "--sort=-version:refname")
+	sco, sce, exitCode, err3 := help.RunRepoCmd(repoPath, "tag", "--sort=-version:refname")
 	if err3 != nil || sce != nil || exitCode != 0 {
 		latestVersion = ""
 		return
@@ -145,7 +146,7 @@ func getCurrentVersion(repoPath string) (latestVersion string) {
 
 // getCommitHash returns the git commit has for the given tag.
 func getCommitHash(repoPath, tag string) (commitHash string, err error) {
-	sco, sce, exitCode, err1 := runRepoCmd(repoPath, "rev-list", "-n", "1", tag)
+	sco, sce, exitCode, err1 := help.RunRepoCmd(repoPath, "rev-list", "-n", "1", tag)
 	if err1 != nil {
 		return
 	}
@@ -174,9 +175,9 @@ func getNextVersion(repoPath, tag string) (nextVer, nextVerReason string) {
 	// TODO: Handle really large amounts of git logs efficiently.
 	// Look at all commit logs since the last tag (maybe only annotated):
 	if revRange == "" {
-		sco, sce, exitCode, err1 = runRepoCmd(repoPath, "log", "--format=medium")
+		sco, sce, exitCode, err1 = help.RunRepoCmd(repoPath, "log", "--format=medium")
 	} else {
-		sco, sce, exitCode, err1 = runRepoCmd(repoPath, "log", "--format=medium", revRange)
+		sco, sce, exitCode, err1 = help.RunRepoCmd(repoPath, "log", "--format=medium", revRange)
 		if err1 != nil {
 			_ = fmt.Errorf("error retrieving git logs: %v", err1.Error())
 			return
