@@ -131,7 +131,6 @@ workflows:
         jobs:
             - run-test:
                 context: << pipeline.parameters.ctx_docker >>
-                name: "run test"
             - vro/tag-and-release:
                 context: << pipeline.parameters.ctx_auto_release >>
                 requires: [ run-test ]
@@ -143,6 +142,6 @@ workflows:
         jobs:
             - publish-execs:
                 context: << pipeline.parameters.ctx_auto_release >>
-                app_name: <<pipeline.parameters.app_name>>
+                app_name: << pipeline.parameters.app_name >>
             - publish-image:
                 context: << pipeline.parameters.ctx_docker >>
